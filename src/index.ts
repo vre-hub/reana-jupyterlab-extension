@@ -32,14 +32,24 @@ class ReanaWidget extends Widget {
 
     this.addClass('my-reanaWidget');
 
+    // Add an anchor element to the panel
+    this.a = document.createElement('a');
+    this.a.target = '_blank';
+    this.node.appendChild(this.a);
+
     // Add an image element to the panel
     this.img = document.createElement('img');
-    this.node.appendChild(this.img);
+    this.a.appendChild(this.img);
 
     // Add a summary element to the panel
     this.summary = document.createElement('p');
     this.node.appendChild(this.summary);
   }
+
+  /**
+   * The anchor element associated with the widget.
+   */
+  readonly a: HTMLAnchorElement;
 
   /**
   * The image element associated with the widget.
@@ -55,8 +65,8 @@ class ReanaWidget extends Widget {
   * Handle update requests for the widget.
   */
   async updateAPODImage(): Promise<void> {
-
-    const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${this.randomDate()}`);
+    const date = this.randomDate();
+    const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${date}`);
 
     if (!response.ok) {
       const data = await response.json();
@@ -71,6 +81,9 @@ class ReanaWidget extends Widget {
     const data = await response.json() as APODResponse;
 
     if (data.media_type === 'image') {
+      // Link the URL to the APOD's page
+      this.a.href = `https://apod.nasa.gov/apod/ap${date.replace(/-/g, '').substring(2)}.html`;
+
       // Populate the image
       this.img.src = data.url;
       this.img.title = data.title;
