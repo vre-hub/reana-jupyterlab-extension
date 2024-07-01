@@ -130,6 +130,14 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
     }
   });
 
+  // Add shortcut
+  app.commands.addKeyBinding({
+    command: command,
+    args: {},
+    keys: ['Accel Alt P'],
+    selector: 'body'
+  });
+
   // Add the command to the palette.
   palette.addItem({ command, category: 'Tutorial' });
 
