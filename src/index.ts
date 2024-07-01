@@ -1,9 +1,14 @@
 import {
+  ILayoutRestorer,
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { ICommandPalette, MainAreaWidget } from '@jupyterlab/apputils';
+import { 
+  ICommandPalette,
+  MainAreaWidget,
+  WidgetTracker
+} from '@jupyterlab/apputils';
 
 import { Widget } from '@lumino/widgets';
 
@@ -69,9 +74,9 @@ class ReanaWidget extends Widget {
       // Populate the image
       this.img.src = data.url;
       this.img.title = data.title;
-      this.summary.innerText = data.title;
+      this.summary.innerText = data.title  + '\n' + data.explanation;;
       if (data.copyright) {
-        this.summary.innerText += ` (Copyright ${data.copyright})`;
+        this.summary.innerText += ` (Copyright ${data.copyright.trim()})`;
       }
     } else {
       this.summary.innerText = 'Random APOD fetched was not an image.';
@@ -92,37 +97,34 @@ class ReanaWidget extends Widget {
 /**
 * Activate the APOD widget extension.
 */
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer | null) {
   console.log('JupyterLab extension jupyterlab_reana is activated!');
 
-  // Define a widget creator function
-  const newWidget = () => {
-    const content = new ReanaWidget();
-    const widget = new MainAreaWidget({content});
-    widget.id = 'reana-jupyterlab';
-    widget.title.label = 'Astronomy Picture';
-    widget.title.closable = true;
-    return widget;
-  }
-
-  // Create a single widget
-  let widget = newWidget();
+  // Declare a widget variable
+  let widget: MainAreaWidget<ReanaWidget>;
 
   // Add an application command
   const command: string = 'reana:open';
   app.commands.addCommand(command, {
     label: 'Random Astronomy Picture',
     execute: () => {
-      // Regenerate the widget if disposed
-      if (widget.isDisposed) {
-        widget = newWidget();
+      if (!widget || widget.isDisposed) {
+        const content = new ReanaWidget();
+        widget = new MainAreaWidget({content});
+        widget.id = 'reana-jupyterlab';
+        widget.title.label = 'Astronomy Picture';
+        widget.title.closable = true;
+      }
+      if (!tracker.has(widget)) {
+        // Track the state of the widget for later restoration
+        tracker.add(widget);
       }
       if (!widget.isAttached) {
         // Attach the widget to the main work area if it's not there
         app.shell.add(widget, 'main');
       }
-      // Refresh the picture in the widget
       widget.content.updateAPODImage();
+
       // Activate the widget
       app.shell.activateById(widget.id);
     }
@@ -130,6 +132,17 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
 
   // Add the command to the palette.
   palette.addItem({ command, category: 'Tutorial' });
+
+  // Track and restore the widget state
+  let tracker = new WidgetTracker<MainAreaWidget<ReanaWidget>>({
+    namespace: 'reana'
+  });
+  if (restorer) {
+    restorer.restore(tracker, {
+      command,
+      name: () => 'reana'
+    });
+  }
 }
 
 /**
@@ -139,6 +152,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_apod',
   autoStart: true,
   requires: [ICommandPalette],
+  optional: [ILayoutRestorer],
   activate: activate
 };
 
