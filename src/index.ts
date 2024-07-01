@@ -4,7 +4,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { 
+import {
   ICommandPalette,
   MainAreaWidget,
   WidgetTracker
@@ -87,11 +87,15 @@ class ReanaWidget extends Widget {
       // Populate the image
       this.img.src = data.url;
       this.img.title = data.title;
-      this.summary.innerText = data.title  + '\n' + data.explanation;;
-      if (data.copyright) {
-        this.summary.innerText += ` (Copyright ${data.copyright.trim()})`;
+      this.img.onload = () => {
+        this.summary.innerText = data.title + '\n' + data.explanation;;
+        if (data.copyright) {
+          this.summary.innerText += ` (Copyright ${data.copyright.trim()})`;
+        }
       }
     } else {
+      // Clear image
+      this.img.remove();
       this.summary.innerText = 'Random APOD fetched was not an image.';
     }
   }
@@ -102,7 +106,7 @@ class ReanaWidget extends Widget {
   randomDate(): string {
     const start = new Date(2010, 1, 1);
     const end = new Date();
-    const randomDate = new Date(start.getTime() + Math.random()*(end.getTime() - start.getTime()));
+    const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
     return randomDate.toISOString().slice(0, 10);
   }
 }
@@ -123,7 +127,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
     execute: () => {
       if (!widget || widget.isDisposed) {
         const content = new ReanaWidget();
-        widget = new MainAreaWidget({content});
+        widget = new MainAreaWidget({ content });
         widget.id = 'reana-jupyterlab';
         widget.title.label = 'Astronomy Picture';
         widget.title.closable = true;
