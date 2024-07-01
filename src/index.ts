@@ -12,17 +12,6 @@ import {
 
 import { Widget } from '@lumino/widgets';
 
-/**
- * APOD API response interface
- */
-interface APODResponse {
-  copyright: string;
-  date: string;
-  explanation: string;
-  media_type: 'video' | 'image';
-  title: string;
-  url: string;
-};
 class ReanaWidget extends Widget {
   /**
   * Construct a new Reana widget.
@@ -32,87 +21,24 @@ class ReanaWidget extends Widget {
 
     this.addClass('my-reanaWidget');
 
-    // Add an anchor element to the panel
-    this.a = document.createElement('a');
-    this.a.target = '_blank';
-    this.node.appendChild(this.a);
-
-    // Add an image element to the panel
-    this.img = document.createElement('img');
-    this.a.appendChild(this.img);
-
     // Add a summary element to the panel
     this.summary = document.createElement('p');
     this.node.appendChild(this.summary);
   }
 
   /**
-   * The anchor element associated with the widget.
-   */
-  readonly a: HTMLAnchorElement;
-
-  /**
-  * The image element associated with the widget.
-  */
-  readonly img: HTMLImageElement;
-
-  /**
   * The summary text element associated with the widget.
   */
   readonly summary: HTMLParagraphElement;
 
-  /**
-  * Handle update requests for the widget.
-  */
-  async updateAPODImage(): Promise<void> {
-    const date = this.randomDate();
-    const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${date}`);
-
-    if (!response.ok) {
-      const data = await response.json();
-      if (data.error) {
-        this.summary.innerText = data.error.message;
-      } else {
-        this.summary.innerText = response.statusText;
-      }
-      return;
-    }
-
-    const data = await response.json() as APODResponse;
-
-    if (data.media_type === 'image') {
-      // Link the URL to the APOD's page
-      this.a.href = `https://apod.nasa.gov/apod/ap${date.replace(/-/g, '').substring(2)}.html`;
-
-      // Populate the image
-      this.img.src = data.url;
-      this.img.title = data.title;
-      this.img.onload = () => {
-        this.summary.innerText = data.title + '\n' + data.explanation;;
-        if (data.copyright) {
-          this.summary.innerText += ` (Copyright ${data.copyright.trim()})`;
-        }
-      }
-    } else {
-      // Clear image
-      this.img.remove();
-      this.summary.innerText = 'Random APOD fetched was not an image.';
-    }
-  }
-
-  /**
-  * Get a random date string in YYYY-MM-DD format.
-  */
-  randomDate(): string {
-    const start = new Date(2010, 1, 1);
-    const end = new Date();
-    const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    return randomDate.toISOString().slice(0, 10);
+  async fillContent(): Promise<void> {
+    this.summary.innerText = "Hello, Reana!";
+    return;
   }
 }
 
 /**
-* Activate the APOD widget extension.
+* Activate the Reana widget extension.
 */
 function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer | null) {
   console.log('JupyterLab extension jupyterlab_reana is activated!');
@@ -123,13 +49,13 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
   // Add an application command
   const command: string = 'reana:open';
   app.commands.addCommand(command, {
-    label: 'Random Astronomy Picture',
+    label: 'Start Reana',
     execute: () => {
       if (!widget || widget.isDisposed) {
         const content = new ReanaWidget();
         widget = new MainAreaWidget({ content });
         widget.id = 'reana-jupyterlab';
-        widget.title.label = 'Astronomy Picture';
+        widget.title.label = 'Reana';
         widget.title.closable = true;
       }
       if (!tracker.has(widget)) {
@@ -137,10 +63,10 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
         tracker.add(widget);
       }
       if (!widget.isAttached) {
-        // Attach the widget to the main work area if it's not there
-        app.shell.add(widget, 'main');
+        // Attach the widget to the left work area if it's not there
+        app.shell.add(widget, 'left');
       }
-      widget.content.updateAPODImage();
+      widget.content.fillContent();
 
       // Activate the widget
       app.shell.activateById(widget.id);
@@ -151,12 +77,12 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
   app.commands.addKeyBinding({
     command: command,
     args: {},
-    keys: ['Accel Alt P'],
+    keys: ['Accel Alt R'],
     selector: 'body'
   });
 
   // Add the command to the palette.
-  palette.addItem({ command, category: 'Tutorial' });
+  palette.addItem({ command, category: 'Reana' });
 
   // Track and restore the widget state
   let tracker = new WidgetTracker<MainAreaWidget<ReanaWidget>>({
@@ -174,7 +100,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
  * Initialization data for the jupyterlab_reana extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'jupyterlab_apod',
+  id: 'jupyterlab_reana',
   autoStart: true,
   requires: [ICommandPalette],
   optional: [ILayoutRestorer],
