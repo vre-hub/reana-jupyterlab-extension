@@ -4,8 +4,8 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 **This project is currently in development and is subject to change.**
 
 ## Requirements
-- JupyterLab >= 4
-- Node.js == 20
+- JupyterLab>=4,<5
+- Node.js==20
 
 ## Installation
 Install Python dependencies
