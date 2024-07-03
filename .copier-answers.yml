@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.3.2
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: ruben.perez.mercado@cern.ch
+author_name: Rubén Pérez Mercado
+has_binder: true
+has_settings: false
+kind: frontend
+labextension_name: jupyterlab_reana
+project_short_description: Reana JupyterLab plugin
+python_name: jupyterlab_reana
+repository: https://github.com/vre-hub/reana-jupyterlab-extension
+test: true
+

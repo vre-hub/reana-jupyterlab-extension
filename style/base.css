@@ -1,0 +1,12 @@
+/*
+    See the JupyterLab Developer Guide for useful CSS Patterns:
+
+    https://jupyterlab.readthedocs.io/en/stable/developer/css.html
+*/
+
+.my-reanaWidget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+  }
