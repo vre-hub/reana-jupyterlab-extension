@@ -10,3 +10,7 @@
     align-items: center;
     overflow: auto;
   }
+
+.jp-Toolbar-micro {
+    display: none;
+  }

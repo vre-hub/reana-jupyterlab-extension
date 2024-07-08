@@ -10,41 +10,21 @@ import {
   WidgetTracker
 } from '@jupyterlab/apputils';
 
-import { Widget } from '@lumino/widgets';
-
-class ReanaWidget extends Widget {
-  /**
-  * Construct a new Reana widget.
-  */
-  constructor() {
-    super();
-
-    this.addClass('my-reanaWidget');
-
-    // Add a summary element to the panel
-    this.summary = document.createElement('p');
-    this.node.appendChild(this.summary);
-  }
-
-  /**
-  * The summary text element associated with the widget.
-  */
-  readonly summary: HTMLParagraphElement;
-
-  async fillContent(): Promise<void> {
-    this.summary.innerText = "Hello, Reana!";
-    return;
-  }
-}
+import { EXTENSION_ID } from './const';
+import { SidebarPanel } from './widgets/SidebarPanel';
 
 /**
 * Activate the Reana widget extension.
 */
-function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer | null) {
+function activateSidebarPanel(
+  app: JupyterFrontEnd,
+  palette: ICommandPalette,
+  restorer: ILayoutRestorer | null
+) {
   console.log('JupyterLab extension jupyterlab_reana is activated!');
 
   // Declare a widget variable
-  let widget: MainAreaWidget<ReanaWidget>;
+  let widget: MainAreaWidget<SidebarPanel>;
 
   // Add an application command
   const command: string = 'reana:open';
@@ -52,11 +32,9 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
     label: 'Start Reana',
     execute: () => {
       if (!widget || widget.isDisposed) {
-        const content = new ReanaWidget();
+        const content = new SidebarPanel(app);
+        content.id = EXTENSION_ID + ':panel';
         widget = new MainAreaWidget({ content });
-        widget.id = 'reana-jupyterlab';
-        widget.title.label = 'Reana';
-        widget.title.closable = true;
       }
       if (!tracker.has(widget)) {
         // Track the state of the widget for later restoration
@@ -66,7 +44,6 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
         // Attach the widget to the left work area if it's not there
         app.shell.add(widget, 'left');
       }
-      widget.content.fillContent();
 
       // Activate the widget
       app.shell.activateById(widget.id);
@@ -85,7 +62,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
   palette.addItem({ command, category: 'Reana' });
 
   // Track and restore the widget state
-  let tracker = new WidgetTracker<MainAreaWidget<ReanaWidget>>({
+  let tracker = new WidgetTracker<MainAreaWidget<SidebarPanel>>({
     namespace: 'reana'
   });
   if (restorer) {
@@ -94,17 +71,18 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILay
       name: () => 'reana'
     });
   }
+
 }
 
 /**
  * Initialization data for the jupyterlab_reana extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'jupyterlab_reana',
+  id: EXTENSION_ID,
   autoStart: true,
   requires: [ICommandPalette],
   optional: [ILayoutRestorer],
-  activate: activate
+  activate: activateSidebarPanel
 };
 
 export default plugin;
