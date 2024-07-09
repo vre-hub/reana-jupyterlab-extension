@@ -8,10 +8,12 @@ import React from 'react';
 
 import reana_icon from '/src/images/reana-icon.svg';
 import { Header } from '../components/Header';
+import { MenuBar } from '../components/MenuBar';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
-import { ReanaAuthCredentials } from '../types';
+import { IReanaAuthCredentials } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
+import { HorizontalHeading } from '../components/HorizontalHeading';
 
 
 const useStyles = createUseStyles({
@@ -40,41 +42,47 @@ const useStyles = createUseStyles({
       height: '100%'
     }
   },
+  hidden: {
+    display: 'none'
+  }
 });
 
 const Panel: React.FC = () => {
   const classes = useStyles();
 
-  const isAuthenticated = useStoreState(UIStore, s => s?.authConfig !== null);
+  const reanaAuthParams = useStoreState(UIStore, s => s.authConfig);
+  const hasConnection = useStoreState(UIStore, s => s.hasConnection);
 
-  // const menus = [
-  //   { title: 'Your workflows', value: 1, right: false },
-  // ]
+  const [activeMenu, setActiveMenu] = React.useState(2);
+  const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>(reanaAuthParams);
+
+  const menus = [
+    { title: 'Your workflows', value: 1, right: false, disabled: !hasConnection },
+    { title: 'Connection settings', value: 2, right: false }
+  ]
 
   return (
     <div className={classes.panel}>
       <Header />
       <div className={classes.container}>
-        {
-          !isAuthenticated ? (
-            <div className={classes.content}>
-              <div className={classes.menuBar}>
-                {/* <MenuBar menus={menus} /> */}
-              </div>
-              <div>
-                <div>
-                  <p>Workflows list</p>
-                </div>
-              </div>
+        <div className={classes.menuBar}>
+          <MenuBar menus={menus} value={activeMenu} onChange={setActiveMenu} />
+        </div>
+        <div className={activeMenu !== 1 ? classes.hidden : ''}>
+          {activeMenu === 1 && <p>Your Workflows list</p>}
+        </div>
+        <div className={activeMenu !== 2 ? classes.hidden : ''}>
+          {activeMenu === 2 && (
+            <div>
+              <HorizontalHeading title="Connect to REANA" />
+              <ConnectionForm
+                params={authConfig}
+                onAuthParamsChange={v => setAuthConfig(v)}
+              />
             </div>
-          ) : (
-            <div className={classes.content}>
-              <div>
-                <ConnectionForm />
-              </div>
-            </div>
-          )
-        }
+          )}
+
+        </div>
       </div>
     </div>
   );
@@ -115,24 +123,6 @@ export class SidebarPanel extends VDomRenderer {
 
     console.log(this.app)
     console.log(this.isAuthenticated)
-  }
-
-  protected login(auth: ReanaAuthCredentials): void {
-    this.isAuthenticated = true;
-    this.populateUIStore(auth);
-    this.update();
-  }
-
-  protected logout(): void {
-    this.isAuthenticated = false;
-    this.populateUIStore(null);
-    this.update();
-  }
-
-  private populateUIStore(auth: ReanaAuthCredentials | null): void {
-    UIStore.update(s => {
-      s.authConfig = auth;
-    });
   }
 
   render(): React.ReactElement {

@@ -11,17 +11,30 @@
 
 import { Store } from 'pullstate';
 import {
-  ReanaAuthCredentials,
+  IReanaAuthCredentials,
 } from '../types';
 
 export interface IUIState {
-  authConfig?: ReanaAuthCredentials | null;
+  authConfig: IReanaAuthCredentials;
+  hasConnection: boolean;
 }
 
-export const initialState: IUIState = {};
+export const initialState: IUIState = {
+  authConfig: {
+    server: '',
+    accessToken: ''
+  },
+  hasConnection: false
+};
 
 export const UIStore = new Store(initialState);
 
 export const resetReanaCaches = (): void => {
-  UIStore.update(s => {});
+  UIStore.update(s => {
+    s.authConfig = {
+      server: '',
+      accessToken: ''
+    };
+    s.hasConnection = false;
+  });
 };

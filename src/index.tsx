@@ -1,8 +1,10 @@
 import {
   ILabShell,
+  ILayoutRestorer,
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
+
 
 import { EXTENSION_ID } from './const';
 import { SidebarPanel } from './widgets/SidebarPanel';
@@ -13,14 +15,18 @@ import { SidebarPanel } from './widgets/SidebarPanel';
 function activateSidebarPanel(
   app: JupyterFrontEnd,
   labShell: ILabShell,
+  restorer: ILayoutRestorer | null
 ) {
-  console.log('JupyterLab extension jupyterlab_reana is activated!');
+  console.log('jupyterlab_reana: sidebar panel is activated!');
 
   const sidebarPanel = new SidebarPanel({ app });
   sidebarPanel.id = EXTENSION_ID + ':panel';
   labShell.add(sidebarPanel, 'left', { rank: 900 });
   labShell.activateById(sidebarPanel.id);
 
+  if (restorer) {
+    restorer.add(sidebarPanel, sidebarPanel.id);
+  }
 }
 
 /**
@@ -30,7 +36,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: EXTENSION_ID,
   autoStart: true,
   requires: [ILabShell],
+  optional: [ILayoutRestorer],
   activate: activateSidebarPanel
+
 };
 
 export default plugin;
