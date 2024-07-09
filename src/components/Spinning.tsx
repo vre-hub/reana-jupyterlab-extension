@@ -11,22 +11,31 @@
 
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import ReanaLogo from './ReanaLogo';
 
 const useStyles = createUseStyles({
-  container: {
-    padding: '16px 8px 8px 8px'
+  '@keyframes rotation': {
+    from: {
+      transform: 'rotate(0deg)'
+    },
+    to: {
+      transform: 'rotate(359deg)'
+    }
+  },
+  rotate: {
+    animation: '$rotation 1s infinite linear',
+    animationName: '$rotation'
   }
 });
 
-export const Header: React.FunctionComponent<
-  React.HTMLAttributes<HTMLElement>
-> = props => {
+export const Spinning: React.FC<React.HTMLAttributes<HTMLElement>> = ({
+  children,
+  className,
+  ...props
+}) => {
   const classes = useStyles();
-
   return (
-    <div className={classes.container} {...props}>
-      <ReanaLogo />
-    </div>
+    <span className={`${className} ${classes.rotate}`} {...props}>
+      {children}
+    </span>
   );
 };

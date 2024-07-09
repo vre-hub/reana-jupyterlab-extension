@@ -11,22 +11,26 @@
 
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import ReanaLogo from './ReanaLogo';
 
 const useStyles = createUseStyles({
-  container: {
-    padding: '16px 8px 8px 8px'
+  heading: {
+    borderBottom: '1px solid var(--jp-border-color2)',
+    margin: 0,
+    padding: '24px 16px 8px 16px',
+    fontWeight: 'bold',
+    textAlign: 'start',
+    fontSize: '9pt',
+    textTransform: 'uppercase'
   }
 });
 
-export const Header: React.FunctionComponent<
-  React.HTMLAttributes<HTMLElement>
-> = props => {
-  const classes = useStyles();
+interface IHorizontalHeadingProps {
+  title: string;
+}
 
-  return (
-    <div className={classes.container} {...props}>
-      <ReanaLogo />
-    </div>
-  );
+export const HorizontalHeading: React.FC<IHorizontalHeadingProps> = ({
+  title
+}) => {
+  const classes = useStyles();
+  return <div className={classes.heading}>{title}</div>;
 };

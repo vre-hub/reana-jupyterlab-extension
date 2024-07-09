@@ -59,6 +59,7 @@
         "@jupyterlab/application": "^4.2.3",
         "@jupyterlab/apputils": "^4.3.3",
         "@lumino/widgets": "^2.4.0",
+        "pullstate": "^1.25.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-jss": "^10.10.0"
