@@ -5,6 +5,7 @@ import { createUseStyles } from 'react-jss';
 import { IReanaAuthCredentials } from '../../types';
 import { Button } from '../Button';
 import { UIStore } from '../../stores/UIStore';
+import { requestAPI } from '../../utils/ApiRequest';
 
 const useStyles = createUseStyles({
     container: {
@@ -34,7 +35,7 @@ function pingServer(server: string, accessToken: string) {
     return Math.random() < 0.8;
 }
 
-function checkConnection(server: string, accessToken: string) {
+async function checkConnection(server: string, accessToken: string) {
     // Update UI store
     UIStore.update(s => {
         s.authConfig = {
@@ -43,7 +44,23 @@ function checkConnection(server: string, accessToken: string) {
         };
     });
 
+    try {
+      await requestAPI<any>('env_variables', {
+        method: 'POST',
+        body: JSON.stringify({ server, accessToken }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      //TODO: Change/Remove the alert and include the message in the panel
+      alert('Variables set successfully');
+    } catch (error) {
+      console.error('Error setting variables:', error);
+    }
+
+
     UIStore.update(s => {
+        //TODO: We could retrieve the list of workflows directly instead of checking connection and check whether the request fails.
         s.hasConnection = pingServer(server, accessToken);
     });
 

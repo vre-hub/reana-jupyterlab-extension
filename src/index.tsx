@@ -19,7 +19,7 @@ function activateSidebarPanel(
 ) {
   console.log('jupyterlab_reana: sidebar panel is activated!');
 
-  const sidebarPanel = new SidebarPanel({ app });
+  const sidebarPanel = new SidebarPanel();
   sidebarPanel.id = EXTENSION_ID + ':panel';
   labShell.add(sidebarPanel, 'left', { rank: 900 });
   labShell.activateById(sidebarPanel.id);

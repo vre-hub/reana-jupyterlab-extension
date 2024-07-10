@@ -19,6 +19,14 @@ export interface IUIState {
   hasConnection: boolean;
 }
 
+// export const initialState: IUIState = {
+//   authConfig: {
+//     server: '',
+//     accessToken: ''
+//   },
+//   hasConnection: false
+// };
+
 export const initialState: IUIState = {
   authConfig: {
     server: '',

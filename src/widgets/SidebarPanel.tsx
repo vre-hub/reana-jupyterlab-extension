@@ -1,9 +1,8 @@
-import { JupyterFrontEnd } from '@jupyterlab/application';
 import { LabIcon } from '@jupyterlab/ui-components';
 import { VDomRenderer } from '@jupyterlab/apputils';
 
 import { createUseStyles } from 'react-jss';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 
 import reana_icon from '/src/images/reana-icon.svg';
@@ -14,6 +13,8 @@ import { IReanaAuthCredentials } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
+
+import { requestAPI } from '../utils/ApiRequest';
 
 
 const useStyles = createUseStyles({
@@ -47,19 +48,52 @@ const useStyles = createUseStyles({
   }
 });
 
+
 const Panel: React.FC = () => {
   const classes = useStyles();
 
-  const reanaAuthParams = useStoreState(UIStore, s => s.authConfig);
+  const [fetchFlag, setFetchFlag] = useState(false);
+  useEffect(() => {
+    if (!fetchFlag) {
+      const populateUIStore = async () => {
+        try{
+          const data = await requestAPI<any>('env_variables', {
+            method: 'GET',
+          });
+          
+          UIStore.update(s => {
+            s.authConfig = {
+              server: data.server,
+              accessToken: data.accessToken
+            };
+            //TODO: Check if I can store this value in the tmp file or if it is not necessary
+            s.hasConnection = true;
+          });
+
+          setAuthConfig(data);
+          setFetchFlag(true)
+        } catch (error) {
+          console.error('Error setting variables:', error);
+        }
+      }
+      populateUIStore().catch(console.error);
+    };
+  }, [fetchFlag]);
+
   const hasConnection = useStoreState(UIStore, s => s.hasConnection);
 
   const [activeMenu, setActiveMenu] = React.useState(2);
-  const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>(reanaAuthParams);
+  const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
 
   const menus = [
-    { title: 'Your workflows', value: 1, right: false, disabled: !hasConnection },
-    { title: 'Connection settings', value: 2, right: false }
-  ]
+    { title: 'Workflows', value: 1, right: false, disabled: !hasConnection },
+    { title: 'Connect', value: 2, right: false }
+  ];
+
+  //TODO: Include in the return statement, change text to Spinner and disabled TextFields
+  if (!fetchFlag) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={classes.panel}>
@@ -88,10 +122,6 @@ const Panel: React.FC = () => {
   );
 }
 
-export interface ISidebarPanelProps {
-  app: JupyterFrontEnd;
-}
-
 const PANEL_CLASS = 'jp-ReanaExtensionPanel';
 
 export class SidebarPanel extends VDomRenderer {
@@ -99,10 +129,7 @@ export class SidebarPanel extends VDomRenderer {
   * Construct a new Reana widget.
   */
 
-  private app: JupyterFrontEnd;
-  private isAuthenticated: boolean;
-
-  constructor(options: ISidebarPanelProps) {
+  constructor() {
     super();
     super.addClass(PANEL_CLASS);
     super.title.caption = 'Reana extension for JupyterLab';
@@ -115,14 +142,6 @@ export class SidebarPanel extends VDomRenderer {
     });
 
     super.title.icon = ReanaIcon.bindprops();
-
-    const { app } = options;
-
-    this.app = app;
-    this.isAuthenticated = false;
-
-    console.log(this.app)
-    console.log(this.isAuthenticated)
   }
 
   render(): React.ReactElement {
