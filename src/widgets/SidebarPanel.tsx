@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import reana_icon from '/src/images/reana-icon.svg';
 import { Header } from '../components/Header';
 import { MenuBar } from '../components/MenuBar';
+import { Spinning } from '../components/Spinning';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
 import { IReanaAuthCredentials } from '../types';
 import { UIStore } from '../stores/UIStore';
@@ -22,10 +23,6 @@ const useStyles = createUseStyles({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-  },
-  icon: {
-    fontSize: '10px',
-    verticalAlign: 'middle',
   },
   container: {
     flex: 1,
@@ -45,6 +42,17 @@ const useStyles = createUseStyles({
   },
   hidden: {
     display: 'none'
+  },
+  loading: {
+    padding: '16px'
+  },
+  icon: {
+    fontSize: '10px',
+    verticalAlign: 'middle',
+  },
+  iconText: {
+    verticalAlign: 'middle',
+    paddingLeft: '4px'
   }
 });
 
@@ -52,9 +60,9 @@ const useStyles = createUseStyles({
 const Panel: React.FC = () => {
   const classes = useStyles();
 
-  const [fetchFlag, setFetchFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (!fetchFlag) {
+    if (loading) {
       const populateUIStore = async () => {
         try{
           const data = await requestAPI<any>('env_variables', {
@@ -71,14 +79,14 @@ const Panel: React.FC = () => {
           });
 
           setAuthConfig(data);
-          setFetchFlag(true)
+          setLoading(false)
         } catch (error) {
           console.error('Error setting variables:', error);
         }
       }
       populateUIStore().catch(console.error);
     };
-  }, [fetchFlag]);
+  }, [loading]);
 
   const hasConnection = useStoreState(UIStore, s => s.hasConnection);
 
@@ -90,9 +98,15 @@ const Panel: React.FC = () => {
     { title: 'Connect', value: 2, right: false }
   ];
 
-  //TODO: Include in the return statement, change text to Spinner and disabled TextFields
-  if (!fetchFlag) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={classes.loading}>
+          <Spinning className={`${classes.icon} material-icons`}>
+            hourglass_top
+          </Spinning>
+          <span className={classes.iconText}>Loading...</span>
+      </div>
+    );
   }
 
   return (
