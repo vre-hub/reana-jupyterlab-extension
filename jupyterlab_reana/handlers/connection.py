@@ -23,9 +23,10 @@ class EnvVariablesHandler(APIHandler):
         
     def post(self):
         data = self.get_json_body()
+
+        # Save the data (TODO [REANA-CLIENT]: Only if ping is successful, otherwise show error message)
         server = data['server']
         access_token = data['accessToken']
-
         os.environ['REANA_SERVER_URL'] = server
         os.environ['REANA_ACCESS_TOKEN'] = access_token
 
@@ -36,5 +37,5 @@ class EnvVariablesHandler(APIHandler):
 
         self.finish(json.dumps({
             'status': 'success',
-            'message': 'Credentials saved successfully.'
+            'message': 'Credentials saved successfully. Please refresh any running terminals.'
         }))

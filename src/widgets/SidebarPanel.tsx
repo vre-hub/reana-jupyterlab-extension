@@ -74,12 +74,13 @@ const Panel: React.FC = () => {
               server: data.server,
               accessToken: data.accessToken
             };
-            //TODO: Check if I can store this value in the tmp file or if it is not necessary
-            s.hasConnection = true;
+
+            s.hasConnection = !!data.server;
           });
 
           setAuthConfig(data);
-          setLoading(false)
+          setLoading(false);
+          
         } catch (error) {
           console.error('Error setting variables:', error);
         }
