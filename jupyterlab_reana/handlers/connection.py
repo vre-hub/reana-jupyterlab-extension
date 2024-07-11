@@ -36,5 +36,5 @@ class EnvVariablesHandler(APIHandler):
 
         self.finish(json.dumps({
             'status': 'success',
-            'message': 'Environment variables set successfully'
+            'message': 'Credentials saved successfully.'
         }))

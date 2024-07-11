@@ -7,6 +7,8 @@ import { Button } from '../Button';
 import { UIStore } from '../../stores/UIStore';
 import { requestAPI } from '../../utils/ApiRequest';
 
+import { Notification } from '@jupyterlab/apputils';
+
 const useStyles = createUseStyles({
     container: {
       padding: '8px 16px 8px 16px'
@@ -45,15 +47,23 @@ async function checkConnection(server: string, accessToken: string) {
     });
 
     try {
-      await requestAPI<any>('env_variables', {
+      const data = await requestAPI<any>('env_variables', {
         method: 'POST',
         body: JSON.stringify({ server, accessToken }),
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      //TODO: Change/Remove the alert and include the message in the panel
-      alert('Variables set successfully');
+
+      Notification.emit(
+        data.message,
+        data.status,
+        {
+          autoClose: 4000,
+        }
+      );
+
+
     } catch (error) {
       console.error('Error setting variables:', error);
     }
@@ -103,6 +113,7 @@ export const ConnectionForm: React.FC<MyProps> = ({
             <div className={classes.textFieldContainer}>
                 <Button onClick={() => checkConnection(params.server, params.accessToken)}>Connect</Button>
             </div>
+            
           </div>
         </>
       );
