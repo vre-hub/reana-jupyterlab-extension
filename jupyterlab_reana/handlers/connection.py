@@ -12,6 +12,8 @@ class EnvVariablesHandler(APIHandler):
             config.read(self.tmp_file_path)
             server = config['REANA']['REANA_SERVER_URL']
             access_token = config['REANA']['REANA_ACCESS_TOKEN']
+            os.environ['REANA_SERVER_URL'] = server
+            os.environ['REANA_ACCESS_TOKEN'] = access_token
         else:
             server = ''
             access_token = ''
