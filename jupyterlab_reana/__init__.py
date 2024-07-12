@@ -15,7 +15,7 @@ def _jupyter_labextension_paths():
         "dest": "jupyterlab_reana"
     }]
 
-def _jupyter_server_extension_paths():  # pragma: no cover
+def _jupyter_server_extension_points():  # pragma: no cover
     return [{
         "module": "jupyterlab_reana.server"
     }]
