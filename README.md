@@ -24,6 +24,11 @@ Install the extension
 python -m pip install .
 ```
 
+Enable the server extension
+```bash
+jupyter serverextension enable --py reana_jupyterlab
+```
+
 Finally, open a JupyterLab instance. The extension should be available in the JupyterLab sidebar.
 ```bash
 jupyter lab
