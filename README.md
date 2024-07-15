@@ -7,6 +7,7 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 
 ## Requirements
 - JupyterLab>=4,<5
+- Notebook<7
 - Node.js==20
 
 ## Installation
@@ -23,6 +24,11 @@ jlpm install
 Install the extension
 ```bash
 python -m pip install .
+```
+
+Enable the server extension
+```bash
+jupyter server extension enable --py reana_jupyterlab
 ```
 
 Finally, open a JupyterLab instance. The extension should be available in the JupyterLab sidebar.

@@ -34,6 +34,7 @@ jobs:
         set -eux
         python -m pip install .[test]
 
+        jupyter server extension enable --py jupyterlab_reana
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "jupyterlab_reana.*OK"
         python -m jupyterlab.browser_check

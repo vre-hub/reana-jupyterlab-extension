@@ -10,3 +10,13 @@
     align-items: center;
     overflow: auto;
   }
+
+.jp-Toolbar-micro {
+    display: none;
+  }
+
+.jp-ReanaExtensionPanel {
+    color: var(--jp-ui-font-color1);
+    background: var(--jp-layout-color1);
+    min-width: var(--jp-sidebar-min-width);
+}
