@@ -1,4 +1,6 @@
 # Reana JupyterLab Extension
+[![Install dependencies and build](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/build.yml/badge.svg)](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/build.yml/badge.svg)
+
 Reana JupyterLab plugin provides a set of tools to interact with the [Reana](https://reanahub.io/) workflow management system from within JupyterLab. 
 
 **This project is currently in development and is subject to change.**
