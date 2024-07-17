@@ -14,7 +14,7 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 ## Installation
 Install Python dependencies
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 Install Yarn dependencies
@@ -24,7 +24,7 @@ jlpm install
 
 Install the extension
 ```bash
-pip install .
+python -m pip install .
 ```
 
 Enable the server extension
