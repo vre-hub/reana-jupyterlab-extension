@@ -8,9 +8,10 @@ import React, { useState, useEffect } from 'react';
 import reana_icon from '/src/images/reana-icon.svg';
 import { Header } from '../components/Header';
 import { MenuBar } from '../components/MenuBar';
-import { Spinning } from '../components/Spinning';
+import { Loading } from '../components/Loading';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
-import { IReanaAuthCredentials } from '../types';
+import { WorkflowList } from '../components/@Workflows/WorkflowList';
+import { IReanaAuthCredentials, IReanaWorkflow } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
@@ -42,17 +43,6 @@ const useStyles = createUseStyles({
   },
   hidden: {
     display: 'none'
-  },
-  loading: {
-    padding: '16px'
-  },
-  icon: {
-    fontSize: '10px',
-    verticalAlign: 'middle',
-  },
-  iconText: {
-    verticalAlign: 'middle',
-    paddingLeft: '4px'
   }
 });
 
@@ -65,7 +55,7 @@ const Panel: React.FC = () => {
     if (loading) {
       const populateUIStore = async () => {
         try{
-          const data = await requestAPI<any>('env_variables', {
+          const data = await requestAPI<any>('env', {
             method: 'GET',
           });
           
@@ -79,10 +69,11 @@ const Panel: React.FC = () => {
           });
 
           setAuthConfig(data);
-          setLoading(false);
           
         } catch (error) {
           console.error('Error setting variables:', error);
+        } finally {
+          setLoading(false);
         }
       }
       populateUIStore().catch(console.error);
@@ -93,6 +84,7 @@ const Panel: React.FC = () => {
 
   const [activeMenu, setActiveMenu] = React.useState(2);
   const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
+  const [workflows, setWorkflows] = React.useState<IReanaWorkflow[]>([]);
 
   const menus = [
     { title: 'Workflows', value: 1, right: false, disabled: !hasConnection },
@@ -100,14 +92,7 @@ const Panel: React.FC = () => {
   ];
 
   if (loading) {
-    return (
-      <div className={classes.loading}>
-          <Spinning className={`${classes.icon} material-icons`}>
-            hourglass_top
-          </Spinning>
-          <span className={classes.iconText}>Loading...</span>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -118,7 +103,15 @@ const Panel: React.FC = () => {
           <MenuBar menus={menus} value={activeMenu} onChange={setActiveMenu} />
         </div>
         <div className={activeMenu !== 1 ? classes.hidden : ''}>
-          {activeMenu === 1 && <p>Your Workflows list</p>}
+          {activeMenu === 1 && (
+            <div>
+              <HorizontalHeading title="Your workflows" />
+              <WorkflowList
+                workflows={workflows}
+                setWorkflows={(v: any) => setWorkflows(v)}
+              />
+            </div>    
+          )}
         </div>
         <div className={activeMenu !== 2 ? classes.hidden : ''}>
           {activeMenu === 2 && (
@@ -130,7 +123,6 @@ const Panel: React.FC = () => {
               />
             </div>
           )}
-
         </div>
       </div>
     </div>

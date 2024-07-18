@@ -1,22 +1,13 @@
 from jupyter_server.base.handlers import APIHandler
 import os
 import json
-import configparser
+from reana_client.api.client import ping
+from reana_commons.api_client import BaseAPIClient
 
 class EnvVariablesHandler(APIHandler):
-    tmp_file_path = '/tmp/jl_reana_config.vars'
-
     def get(self):
-        if os.path.exists(self.tmp_file_path):
-            config = configparser.ConfigParser()
-            config.read(self.tmp_file_path)
-            server = config['REANA']['REANA_SERVER_URL']
-            access_token = config['REANA']['REANA_ACCESS_TOKEN']
-            os.environ['REANA_SERVER_URL'] = server
-            os.environ['REANA_ACCESS_TOKEN'] = access_token
-        else:
-            server = ''
-            access_token = ''
+        server = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         self.finish(json.dumps({
             'server': server,
@@ -26,18 +17,31 @@ class EnvVariablesHandler(APIHandler):
     def post(self):
         data = self.get_json_body()
 
-        # Save the data (TODO [REANA-CLIENT]: Only if ping is successful, otherwise show error message)
-        server = data['server']
-        access_token = data['accessToken']
-        os.environ['REANA_SERVER_URL'] = server
-        os.environ['REANA_ACCESS_TOKEN'] = access_token
+        try:
+            server = data['server']
+            access_token = data['accessToken']
 
-        with open(self.tmp_file_path, 'w') as f:
-            f.write(f'[REANA]\nREANA_SERVER_URL={server}\nREANA_ACCESS_TOKEN={access_token}\n')
+            os.environ['REANA_SERVER_URL'] = server
+            os.environ['REANA_ACCESS_TOKEN'] = access_token
+            BaseAPIClient("reana-server")
 
-        print(f'file path: {f.name}')
+            response = ping(access_token)
 
-        self.finish(json.dumps({
-            'status': 'success',
-            'message': 'Credentials saved successfully. Please refresh any running terminals.'
-        }))
+            if response.get('error', True):
+                self.finish(json.dumps({
+                    'status': 'error',
+                    'message': f'Could not connect to the REANA server. {response.get("status", "").capitalize()}'
+                }))
+            else:
+                self.finish(json.dumps({
+                    'status': 'success',
+                    'message': 'Credentials saved successfully. Please close any running terminals to apply the changes.'
+                }))
+                
+
+        except Exception as e:
+            print(e)
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': 'Something went wrong. Please try again.'
+            }))
