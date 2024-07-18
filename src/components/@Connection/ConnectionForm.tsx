@@ -35,7 +35,7 @@ type MyProps = IConnectionProps & React.HTMLAttributes<HTMLDivElement>;
 
 async function checkConnection(server: string, accessToken: string) {
   try {
-    const data = await requestAPI<any>('env_variables', {
+    const data_env = await requestAPI<any>('env', {
       method: 'POST',
       body: JSON.stringify({ server, accessToken }),
       headers: {
@@ -44,8 +44,8 @@ async function checkConnection(server: string, accessToken: string) {
     });
 
     Notification.emit(
-      data.message,
-      data.status,
+      data_env.message,
+      data_env.status,
       {
         autoClose: 3000,
       }
@@ -57,11 +57,17 @@ async function checkConnection(server: string, accessToken: string) {
         server: server,
         accessToken: accessToken
       };
-      s.hasConnection = data.status === 'success';
+      s.hasConnection = data_env.status === 'success';
     });
 
   } catch (error) {
-    console.error('Error setting variables:', error);
+    console.log(error)
+    Notification.error(
+      'Connection Error',
+      {
+        autoClose: 3000,
+      }
+    )
   }
 
 }
@@ -102,7 +108,6 @@ export const ConnectionForm: React.FC<MyProps> = ({
         <div className={classes.textFieldContainer}>
           <Button onClick={() => checkConnection(params.server, params.accessToken)}>Connect</Button>
         </div>
-
       </div>
     </>
   );
