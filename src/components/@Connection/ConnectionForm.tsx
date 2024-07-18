@@ -35,7 +35,7 @@ type MyProps = IConnectionProps & React.HTMLAttributes<HTMLDivElement>;
 
 async function checkConnection(server: string, accessToken: string) {
   try {
-    const data_env = await requestAPI<any>('env', {
+    const data = await requestAPI<any>('env', {
       method: 'POST',
       body: JSON.stringify({ server, accessToken }),
       headers: {
@@ -44,8 +44,8 @@ async function checkConnection(server: string, accessToken: string) {
     });
 
     Notification.emit(
-      data_env.message,
-      data_env.status,
+      data.message,
+      data.status,
       {
         autoClose: 3000,
       }
@@ -57,7 +57,7 @@ async function checkConnection(server: string, accessToken: string) {
         server: server,
         accessToken: accessToken
       };
-      s.hasConnection = data_env.status === 'success';
+      s.hasConnection = data.status === 'success';
     });
 
   } catch (error) {
