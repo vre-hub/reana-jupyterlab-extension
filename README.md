@@ -22,6 +22,11 @@ Install Yarn dependencies
 jlpm install
 ```
 
+Build the extension
+```bash
+jlpm run build
+```
+
 Install the extension
 ```bash
 python -m pip install .
