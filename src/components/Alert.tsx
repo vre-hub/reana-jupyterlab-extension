@@ -31,7 +31,7 @@ export const Alert: React.FC<MyProps> = ({ children, ...props }) => {
   return (
     <div className={classes.root} {...props}>
       <div>
-        <i className={`material-icons ${classes.icon}`}>warning</i>
+        <i className={`material-symbols-outlined ${classes.icon}`}>warning</i>
       </div>
       <div className={classes.textContainer}>{children}</div>
     </div>

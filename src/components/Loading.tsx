@@ -21,7 +21,7 @@ export const Loading: React.FC<React.HTMLAttributes<HTMLElement>> = () => {
 
     return (
         <div className={classes.loading}>
-            <Spinning className={`${classes.icon} material-icons`}>
+            <Spinning className={`${classes.icon} material-symbols-outlined`}>
               hourglass_top
             </Spinning>
             <span className={classes.iconText}>Loading...</span>

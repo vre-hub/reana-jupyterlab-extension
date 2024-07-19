@@ -17,7 +17,6 @@ function activateSidebarPanel(
   labShell: ILabShell,
   restorer: ILayoutRestorer | null
 ) {
-  console.log('jupyterlab_reana: sidebar panel is activated!');
 
   const sidebarPanel = new SidebarPanel();
   sidebarPanel.id = EXTENSION_ID + ':panel';

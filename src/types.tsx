@@ -4,13 +4,12 @@ export interface IReanaAuthCredentials {
 };
 
 export interface IReanaWorkflow {
-    created: string;
     id: string;
     name: string;
-    size: {
-        human_readable: string;
-        raw: number;
-    };
+    run: string;
+    createdAt: string;
+    startedAt: string;
+    finishedAt: string;
+    stoppedAt: string;
     status: string;
-    user: string;
 };

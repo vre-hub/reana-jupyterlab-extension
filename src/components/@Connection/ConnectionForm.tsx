@@ -61,7 +61,6 @@ async function checkConnection(server: string, accessToken: string) {
     });
 
   } catch (error) {
-    console.log(error)
     Notification.error(
       'Connection Error',
       {
