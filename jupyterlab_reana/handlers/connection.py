@@ -5,6 +5,11 @@ from reana_client.api.client import ping
 from reana_commons.api_client import BaseAPIClient
 
 class EnvVariablesHandler(APIHandler):
+    def _update_env(self, access_token='', server=''):
+        os.environ['REANA_SERVER_URL'] = server
+        os.environ['REANA_ACCESS_TOKEN'] = access_token  
+        BaseAPIClient("reana-server")
+    
     def get(self):
         server = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -18,16 +23,16 @@ class EnvVariablesHandler(APIHandler):
         data = self.get_json_body()
 
         try:
-            server = data['server']
-            access_token = data['accessToken']
+            server = data.get('server', '')
+            access_token = data.get('accessToken', '')
 
-            os.environ['REANA_SERVER_URL'] = server
-            os.environ['REANA_ACCESS_TOKEN'] = access_token
-            BaseAPIClient("reana-server")
+            self._update_env(access_token, server)
 
             response = ping(access_token)
 
             if response.get('error', True):
+                self._update_env()
+
                 self.finish(json.dumps({
                     'status': 'error',
                     'message': f'Could not connect to the REANA server. {response.get("status", "").capitalize()}'
