@@ -11,13 +11,12 @@ class WorkflowsHandler(APIHandler):
         parsed_workflows = []
 
         data = workflows.json()
-        print(data)
+
         for workflow in data['items']:
             wf = {}
             wf['id'] = workflow.get('id', '')
             info = workflow.get('name', '').rsplit('.', 1)
-            wf['name'] = info[0]
-            wf['run'] = info[1]
+            wf['name'], wf['run'] = info
             wf['createdAt'] = workflow.get('created')
             wf['startedAt'] = workflow.get('progress').get('run_started_at')
             wf['finishedAt'] = workflow.get('progress').get('run_finished_at')
@@ -36,7 +35,7 @@ class WorkflowsHandler(APIHandler):
 
         if 'search' in params:
             params['search'] = json.dumps({'name': [params['search']]})
-            
+
         params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
 
         string_params = urlencode(params, quote_via=quote_plus)
@@ -49,7 +48,6 @@ class WorkflowsHandler(APIHandler):
         server_url = os.getenv('REANA_SERVER_URL', '')
 
         try:
-            print(f"{server_url}/api/{endpoint}?{string_params}")
             response = requests.get(f"{server_url}/api/{endpoint}?{string_params}")
             workflows = self._parse_workflows(response)
             self.finish(json.dumps(workflows))

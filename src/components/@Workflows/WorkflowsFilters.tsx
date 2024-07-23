@@ -18,7 +18,7 @@ import { TextField } from "../TextField";
 
 const useStyles = createUseStyles({
     searchContainer: {
-        padding: '8px'
+        padding: '8px 16px 8px 16px'
     },
     filterContainer: {
         padding: '0 16px 0 16px',
@@ -28,7 +28,15 @@ const useStyles = createUseStyles({
         color: 'var(--teal)',
         cursor: 'pointer',
         marginLeft: '4px'
-      },
+    },
+    searchButton: {
+        alignItems: 'center',
+        padding: '8px 8px 8px 4px',
+        lineHeight: 0,
+    },
+      searchIcon: {
+        fontSize: '18px',
+    },
 });
 interface IFiltersProps {
     query: string;
@@ -53,6 +61,14 @@ export const WorkflowFilters: React.FC<MyProps> = ({
 }) => {
     const classes = useStyles();
 
+    const searchButton = (
+        <div
+          className={classes.searchButton}
+        >
+          <i className={`${classes.searchIcon} material-symbols-outlined`}>search</i>
+        </div>
+      );
+
     const optionsStatus = [
         { title: "all", value: "all" },
         ...WORKFLOW_STATUSES.map((status) => ({
@@ -64,13 +80,14 @@ export const WorkflowFilters: React.FC<MyProps> = ({
     const optionsSort = [
         {title: "newest first", value: "desc"},
         {title: "oldest first", value: "asc"}
-    ]
+    ];
     return (
         <div>
         <div className={classes.searchContainer}>
             <TextField
                 placeholder="Search"
                 value={query}
+                after={searchButton}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 autoComplete="off"
