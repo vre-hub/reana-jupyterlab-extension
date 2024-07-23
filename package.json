@@ -63,7 +63,9 @@
         "pullstate": "^1.25.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
-        "react-jss": "^10.10.0"
+        "react-jss": "^10.10.0",
+        "react-popover": "^0.5.10",
+        "react-window": "^1.8.10"
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",
@@ -74,6 +76,8 @@
         "@types/react": "^18.0.26",
         "@types/react-addons-linked-state-mixin": "^0.14.22",
         "@types/react-dom": "^18.3.0",
+        "@types/react-popover": "^0.5.8",
+        "@types/react-window": "^1.8.8",
         "@typescript-eslint/eslint-plugin": "^6.1.0",
         "@typescript-eslint/parser": "^6.1.0",
         "css-loader": "^6.7.1",
