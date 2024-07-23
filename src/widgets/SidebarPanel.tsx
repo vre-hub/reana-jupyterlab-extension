@@ -10,7 +10,7 @@ import { Header } from '../components/Header';
 import { MenuBar } from '../components/MenuBar';
 import { Loading } from '../components/Loading';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
-import { WorkflowList } from '../components/@Workflows/WorkflowList';
+import { WorkflowList } from '../components/@Workflows/WorkflowsList';
 import { IReanaAuthCredentials, IReanaWorkflow } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';

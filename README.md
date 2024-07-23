@@ -9,7 +9,6 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 - JupyterLab>=4,<5
 - Notebook<7
 - Node.js==20
-- [Custom version of `reana-client`](https://github.com/mdonadoni/reana-client/tree/vre-summer-24)
 
 ## Installation
 Install Python dependencies
@@ -41,3 +40,12 @@ Finally, open a JupyterLab instance. The extension should be available in the Ju
 ```bash
 jupyter lab
 ```
+
+## Docker image
+It is possible to run the extension in a Docker container. To download and run the image, use the following commands:
+```bash
+docker pull ghcr.io/vre-hub/reana-jupyterlab-extension:<version>
+docker run -d -p 8888:8888 ghcr.io/vre-hub/reana-jupyterlab-extension
+```
+
+All the available versions can be found [here](https://github.com/vre-hub/reana-jupyterlab-extension/pkgs/container/reana-jupyterlab-extension).

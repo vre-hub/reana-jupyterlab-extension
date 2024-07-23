@@ -1,14 +1,13 @@
 from jupyter_server.base.handlers import APIHandler
 import os
 import json
-from reana_client.api.client import ping
-from reana_commons.api_client import BaseAPIClient
+import requests
 
+endpoint = 'ping'
 class EnvVariablesHandler(APIHandler):
     def _update_env(self, access_token='', server=''):
         os.environ['REANA_SERVER_URL'] = server
         os.environ['REANA_ACCESS_TOKEN'] = access_token  
-        BaseAPIClient("reana-server")
     
     def get(self):
         server = os.getenv('REANA_SERVER_URL', '')
@@ -28,14 +27,16 @@ class EnvVariablesHandler(APIHandler):
 
             self._update_env(access_token, server)
 
-            response = ping(access_token)
+            response = requests.get(f"{server}/api/{endpoint}?access_token={access_token}")
 
-            if response.get('error', True):
+            data = response.json()
+
+            if data.get('status', '500') != '200':
                 self._update_env()
-
+                print(data)
                 self.finish(json.dumps({
                     'status': 'error',
-                    'message': f'Could not connect to the REANA server. {response.get("status", "").capitalize()}'
+                    'message': f'Could not connect to the REANA server. {data.get("message", "").capitalize()}'
                 }))
             else:
                 self.finish(json.dumps({

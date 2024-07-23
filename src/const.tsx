@@ -1,5 +1,16 @@
 export const EXTENSION_ID = 'jupyterlab_reana';
 
+export const WORKFLOW_STATUSES = [
+  "created",
+  "deleted",
+  "failed",
+  "finished",
+  "pending",
+  "queued",
+  "running",
+  "stopped",
+];
+
 export const statusMapping : { [key: string]: any } = {
     finished: { icon: "check_circle", color: "green", preposition: "in" },
     running: { icon: "progress_activity", color: "blue", preposition: "for" },
@@ -12,5 +23,5 @@ export const statusMapping : { [key: string]: any } = {
     },
     queued: { icon: "hourglass", color: "teal" },
     pending: { icon: "hourglass_top", color: "teal" },
-    deleted: { icon: "ink_eraser", color: "grey" },
+    deleted: { icon: "ink_eraser", color: "gray" },
 };
