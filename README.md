@@ -9,7 +9,6 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 - JupyterLab>=4,<5
 - Notebook<7
 - Node.js==20
-- [Custom version of `reana-client`](https://github.com/mdonadoni/reana-client/tree/vre-summer-24)
 
 ## Installation
 Install Python dependencies
