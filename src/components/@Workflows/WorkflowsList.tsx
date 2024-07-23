@@ -125,7 +125,6 @@ interface IWorkflowsProps {
 type MyProps = IWorkflowsProps & React.HTMLAttributes<HTMLDivElement>;
 
 
-
 export const WorkflowList: React.FC<MyProps> = ({
     workflows = [],
     setWorkflows,
@@ -134,13 +133,21 @@ export const WorkflowList: React.FC<MyProps> = ({
     const [loading, setLoading] = React.useState(true);
     const [sortDir, setSortDir] = React.useState('desc');
     const [searchType, setSearchType] = React.useState('all');
+    const [query, setQuery] = React.useState('');
+    const [lastQuery, setLastQuery] = React.useState('');
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && query !== lastQuery) {
+            setLoading(true);
+            setLastQuery(query);
+        }
+    };
 
     useEffect(() => {
         if (loading) {
             const populateWorkflows = async () => {
                 try {
-                    const data = await requestAPI<any>(`workflows?type=batch&status=${searchType}&sort=${sortDir}`, {
+                    const data = await requestAPI<any>(`workflows?type=batch&status=${searchType}&sort=${sortDir}&search=${query}`, {
                         method: 'GET',
                     });
                     console.log(data);
@@ -163,6 +170,9 @@ export const WorkflowList: React.FC<MyProps> = ({
     return (
         <div>
             <WorkflowFilters
+                query={query}
+                setQuery={setQuery}
+                handleKeyDown={handleKeyDown}
                 searchType={searchType}
                 setSearchType={(val) => { setSearchType(val); setLoading(true) }}
                 sortDir={sortDir}

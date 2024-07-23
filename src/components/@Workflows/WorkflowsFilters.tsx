@@ -14,9 +14,13 @@ import { InlineDropdown } from "./InlineDropdown";
 import { createUseStyles } from "react-jss";
 import { WORKFLOW_STATUSES } from "../../const";
 import React from "react";
+import { TextField } from "../TextField";
 
 const useStyles = createUseStyles({
-    container: {
+    searchContainer: {
+        padding: '8px'
+    },
+    filterContainer: {
         padding: '0 16px 0 16px',
         fontSize: '1em'
     },
@@ -27,6 +31,9 @@ const useStyles = createUseStyles({
       },
 });
 interface IFiltersProps {
+    query: string;
+    setQuery: (query: string) => void;
+    handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     searchType: string;
     setSearchType: (searchType: string) => void;
     sortDir: string;
@@ -36,8 +43,9 @@ interface IFiltersProps {
 type MyProps = IFiltersProps & React.HTMLAttributes<HTMLDivElement>;
 
 export const WorkflowFilters: React.FC<MyProps> = ({
-    //   statusFilter,
-    //   setStatusFilter,
+    query,
+    setQuery,
+    handleKeyDown,
     searchType,
     setSearchType,
     sortDir,
@@ -58,7 +66,17 @@ export const WorkflowFilters: React.FC<MyProps> = ({
         {title: "oldest first", value: "asc"}
     ]
     return (
-        <div className={classes.container}>
+        <div>
+        <div className={classes.searchContainer}>
+            <TextField
+                placeholder="Search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoComplete="off"
+            />
+        </div>
+        <div className={classes.filterContainer}>
             Status
             <InlineDropdown
                 className={classes.dropdown}
@@ -77,12 +95,14 @@ export const WorkflowFilters: React.FC<MyProps> = ({
                 optionWidth="180px"
             />
         </div>
+        </div>
     );
 }
 
 WorkflowFilters.propTypes = {
-    //   statusFilter: PropTypes.array.isRequired,
-    //   setStatusFilter: PropTypes.func.isRequired,
+    query: PropTypes.string.isRequired,
+    setQuery: PropTypes.func.isRequired,
+    handleKeyDown: PropTypes.func.isRequired,
     searchType: PropTypes.string.isRequired,
     setSearchType: PropTypes.func.isRequired,
     sortDir: PropTypes.string.isRequired,

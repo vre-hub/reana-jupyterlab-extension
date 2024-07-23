@@ -11,7 +11,7 @@ class WorkflowsHandler(APIHandler):
         parsed_workflows = []
 
         data = workflows.json()
-
+        print(data)
         for workflow in data['items']:
             wf = {}
             wf['id'] = workflow.get('id', '')
@@ -34,6 +34,9 @@ class WorkflowsHandler(APIHandler):
         if 'status' in params and params['status'] == 'all':
             del params['status']
 
+        if 'search' in params:
+            params['search'] = json.dumps({'name': [params['search']]})
+            
         params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
 
         string_params = urlencode(params, quote_via=quote_plus)
