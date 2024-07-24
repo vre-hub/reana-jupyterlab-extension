@@ -5,8 +5,9 @@ import { Loading } from '../Loading';
 import { IReanaWorkflow } from '../../types';
 import { requestAPI } from '../../utils/ApiRequest';
 import { Box } from '../Box';
-import { statusMapping } from '../../const';
+import { PAGE_SIZE, statusMapping } from '../../const';
 import { WorkflowFilters } from './WorkflowsFilters';
+import { Pagination } from '../Pagination';
 
 const useStyles = createUseStyles({
     container: {
@@ -18,6 +19,9 @@ const useStyles = createUseStyles({
     },
     textFieldContainer: {
         margin: '8px 0 8px 0'
+    },
+    workflowsContainer: {
+        minHeight: '400px',
     },
     workflow: {
         '&:hover': {
@@ -135,9 +139,12 @@ export const WorkflowList: React.FC<MyProps> = ({
     const [searchType, setSearchType] = React.useState('all');
     const [query, setQuery] = React.useState('');
     const [lastQuery, setLastQuery] = React.useState('');
+    const [page, setPage] = React.useState(1);
+    const [navigation, setNavigation] = React.useState({hasNext: false, hasPrev: false, total: 0});
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && query !== lastQuery) {
+            setPage(1);
             setLoading(true);
             setLastQuery(query);
         }
@@ -147,11 +154,12 @@ export const WorkflowList: React.FC<MyProps> = ({
         if (loading) {
             const populateWorkflows = async () => {
                 try {
-                    const data = await requestAPI<any>(`workflows?type=batch&status=${searchType}&sort=${sortDir}&search=${query}`, {
+                    const data = await requestAPI<any>(`workflows?&status=${searchType}&sort=${sortDir}&search=${query}&page=${page}`, {
                         method: 'GET',
                     });
                     console.log(data);
-                    setWorkflows(data);
+                    setWorkflows('items' in data ? data.items : []);
+                    setNavigation({hasNext: data.hasNext, hasPrev: data.hasPrev, total: data.total});
                 } catch (error) {
                     console.error('Error setting variables:', error);
                 } finally {
@@ -174,22 +182,22 @@ export const WorkflowList: React.FC<MyProps> = ({
                 setQuery={setQuery}
                 handleKeyDown={handleKeyDown}
                 searchType={searchType}
-                setSearchType={(val) => { setSearchType(val); setLoading(true) }}
+                setSearchType={(val) => { setSearchType(val); setPage(1); setLoading(true) }}
                 sortDir={sortDir}
-                setSortDir={(val) => { setSortDir(val); setLoading(true) }}
+                setSortDir={(val) => { setSortDir(val); setPage(1); setLoading(true) }}
             />
-
             <div className={classes.container}>
                 {
                     workflows.length === 0 ?
-                        <div>No workflows found</div> :
+                        <div>No workflows found</div> : (
+                        <div className={classes.workflowsContainer}>
+                        {
+
                         workflows.map((workflow) => {
                             const {
                                 id,
                                 name,
                                 run,
-                                //progress,
-                                //size,
                                 status,
                             } = workflow;
                             return (
@@ -213,7 +221,12 @@ export const WorkflowList: React.FC<MyProps> = ({
                                     </Box>
                                 </div>
                             );
-                        })
+                        })}
+                        </div>
+                    )
+                }
+                {navigation.total > PAGE_SIZE &&
+                    <Pagination currentPage={page} navigation={navigation} onPageChange={(page) => {setPage(page); setLoading(true)}} />
                 }
             </div>
         </div>
