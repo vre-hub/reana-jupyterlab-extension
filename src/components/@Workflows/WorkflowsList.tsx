@@ -142,14 +142,6 @@ export const WorkflowList: React.FC<MyProps> = ({
     const [page, setPage] = React.useState(1);
     const [navigation, setNavigation] = React.useState({hasNext: false, hasPrev: false, total: 0});
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && query !== lastQuery) {
-            setPage(1);
-            setLoading(true);
-            setLastQuery(query);
-        }
-    };
-
     useEffect(() => {
         if (loading) {
             const populateWorkflows = async () => {
@@ -170,6 +162,21 @@ export const WorkflowList: React.FC<MyProps> = ({
         };
     }, [loading]);
 
+    useEffect(() => {
+        setPage(1);
+        setLoading(true);
+    }, [sortDir, searchType, lastQuery]);
+    
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            setLastQuery(query);
+        }
+    };
+
+    const refreshWorkflows = (page: number = 1) => {
+        setPage(page);
+        setLoading(true);
+    }
 
     if (loading) {
         return <Loading />;
@@ -178,13 +185,14 @@ export const WorkflowList: React.FC<MyProps> = ({
     return (
         <div>
             <WorkflowFilters
+                refresh={refreshWorkflows}
                 query={query}
                 setQuery={setQuery}
                 handleKeyDown={handleKeyDown}
                 searchType={searchType}
-                setSearchType={(val) => { setSearchType(val); setPage(1); setLoading(true) }}
+                setSearchType={setSearchType}
                 sortDir={sortDir}
-                setSortDir={(val) => { setSortDir(val); setPage(1); setLoading(true) }}
+                setSortDir={setSortDir}
             />
             <div className={classes.container}>
                 {
@@ -226,7 +234,7 @@ export const WorkflowList: React.FC<MyProps> = ({
                     )
                 }
                 {navigation.total > PAGE_SIZE &&
-                    <Pagination currentPage={page} navigation={navigation} onPageChange={(page) => {setPage(page); setLoading(true)}} />
+                    <Pagination currentPage={page} navigation={navigation} onPageChange={refreshWorkflows} />
                 }
             </div>
         </div>
