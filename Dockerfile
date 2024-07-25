@@ -1,6 +1,8 @@
 FROM ubuntu:20.04
 LABEL maintainer="rubenperezm"
 
+ARG BRANCH
+
 WORKDIR /app
 SHELL ["/bin/bash", "-c"]
 
@@ -8,6 +10,7 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/vre-hub/reana-jupyterlab-extension.git
 WORKDIR /app/reana-jupyterlab-extension
+RUN git checkout $BRANCH
 
 # Install Python
 RUN apt-get install -y python3 python3-pip
