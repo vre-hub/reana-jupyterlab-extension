@@ -1,4 +1,4 @@
-FROM quay.io/jupyter/minimal-notebook:latest
+FROM quay.io/jupyter/scipy-notebook:python-3.11.8
 LABEL maintainer="rubenperezm"
 
 SHELL ["/bin/bash", "-c"]
