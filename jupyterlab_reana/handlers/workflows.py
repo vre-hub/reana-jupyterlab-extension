@@ -7,23 +7,27 @@ from urllib.parse import quote_plus, urlencode
 endpoint = 'workflows'
 
 class WorkflowsHandler(APIHandler):
+    def _parse_workflow(self, workflow):
+        parsed_workflow = {}
+
+        parsed_workflow['id'] = workflow.get('id', '')
+        info = workflow.get('name', '').rsplit('.', 1)
+        parsed_workflow['name'], parsed_workflow['run'] = info
+        parsed_workflow['createdAt'] = workflow.get('created')
+        parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at')
+        parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at')
+        parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at')
+        parsed_workflow['status'] = workflow.get('status')
+
+        return parsed_workflow
+    
     def _parse_workflows(self, workflows):
         parsed_workflows = []
 
         data = workflows.json()
 
         for workflow in data['items']:
-            wf = {}
-            wf['id'] = workflow.get('id', '')
-            info = workflow.get('name', '').rsplit('.', 1)
-            wf['name'], wf['run'] = info
-            wf['createdAt'] = workflow.get('created')
-            wf['startedAt'] = workflow.get('progress').get('run_started_at')
-            wf['finishedAt'] = workflow.get('progress').get('run_finished_at')
-            wf['stoppedAt'] = workflow.get('progress').get('run_stopped_at')
-            wf['status'] = workflow.get('status')
-
-            parsed_workflows.append(wf)
+            parsed_workflows.append(self._parse_workflow(workflow))
 
         data['items'] = parsed_workflows
 
@@ -61,14 +65,57 @@ class WorkflowsHandler(APIHandler):
                 'message': str(e)
             }))
 
+class WorkflowLogsHandler(WorkflowsHandler):
+    def get(self, workflow_id):
+        server_url = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
-class WorkflowStatusHandler(APIHandler):
+        try:
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/logs?access_token={access_token}")
+            self.finish(response.json())
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+        
+class WorkflowStatusHandler(APIHandler):    
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
+            workflow = self._parse_workflow(response.json())
+            self.finish(workflow)
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+class WorkflowWorkspaceHandler(APIHandler):
+    def get(self, workflow_id):
+        server_url = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+
+        try:
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?access_token={access_token}")
+            self.finish(response.json())
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+class WorkflowSpecificationHandler(APIHandler):
+    def get(self, workflow_id):
+        server_url = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+
+        try:
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/specification?access_token={access_token}")
             self.finish(response.json())
         except Exception as e:
             self.finish(json.dumps({

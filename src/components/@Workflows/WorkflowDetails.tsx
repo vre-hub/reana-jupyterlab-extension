@@ -117,10 +117,10 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }
                             <div>ID: {workflow?.id}</div>
                             <div>Name: {workflow?.name}</div>
                             <div>Run: {workflow?.run}</div>
-                            <div>Created At: {workflow?.createdAt}</div>
-                            <div>Started At: {workflow?.startedAt}</div>
-                            <div>Finished At: {workflow?.finishedAt}</div>
-                            <div>Stopped At: {workflow?.stoppedAt}</div>
+                            {workflow?.createdAt && <div>Created: {new Date(workflow.createdAt).toLocaleString()}</div>}
+                            {workflow?.startedAt && <div>Started: {new Date(workflow.startedAt).toLocaleString()}</div>}
+                            {workflow?.finishedAt && <div>Finished: {new Date(workflow.finishedAt).toLocaleString()}</div>}
+                            {workflow?.stoppedAt && <div>Stopped: {new Date(workflow.stoppedAt).toLocaleString()}</div>}
                             <div>Status: {workflow?.status}</div>
                         </div>
                     </div>

@@ -20,7 +20,7 @@ import { Button } from "../Button";
 const useStyles = createUseStyles({
     groupContainer: {
         display: "flex",
-        alignItems: "center",
+        alignItems: "stretch",
         padding: '8px 16px 8px 16px'
     },
     searchContainer: {
@@ -54,10 +54,9 @@ const useStyles = createUseStyles({
         alignItems: 'center',
     },
 
-    refreshButton: {
+    actionsButton: {
         alignItems: 'center',
-        height: '35.6px',
-        width: '35.6px',
+        width: '36px',
         cursor: 'pointer',
         '&:hover': {
             background: 'var(--jp-layout-color2)'
@@ -122,13 +121,23 @@ export const WorkflowFilters: React.FC<MyProps> = ({
                 </div>
 
                 <Button
-                    className={`${classes.refreshButton}`}
+                    className={`${classes.actionsButton}`}
                     onClick={() => refresh()}
                 >
                     <i className={`${classes.refreshIcon} material-symbols-outlined`}>
                         sync
                     </i>
                 </Button>
+
+                { /* TODO: Add workspace button (?) */}
+                {/* <Button
+                    className={`${classes.actionsButton}`}
+                    onClick={() => refresh()}
+                >
+                    <i className={`${classes.refreshIcon} material-symbols-outlined`}>
+                        plus
+                    </i>
+                </Button> */}
             </div>
             <div className={classes.filterContainer}>
                 Status
