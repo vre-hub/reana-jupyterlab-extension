@@ -15,10 +15,18 @@ import { createUseStyles } from "react-jss";
 import { WORKFLOW_STATUSES } from "../../const";
 import React from "react";
 import { TextField } from "../TextField";
+import { Button } from "../Button";
 
 const useStyles = createUseStyles({
-    searchContainer: {
+    groupContainer: {
+        display: "flex",
+        alignItems: "center",
         padding: '8px 16px 8px 16px'
+    },
+    searchContainer: {
+        flexGrow: 1,
+        marginRight: '2px',
+        minWidth: 0
     },
     filterContainer: {
         padding: '0 16px 0 16px',
@@ -34,11 +42,30 @@ const useStyles = createUseStyles({
         padding: '8px 8px 8px 4px',
         lineHeight: 0,
     },
-      searchIcon: {
+    searchIcon: {
         fontSize: '18px',
+    },
+
+    refreshIcon: {
+        marginRight: '2px',
+        fontSize: '18px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    refreshButton: {
+        alignItems: 'center',
+        height: '35.6px',
+        width: '35.6px',
+        cursor: 'pointer',
+        '&:hover': {
+            background: 'var(--jp-layout-color2)'
+        }
     },
 });
 interface IFiltersProps {
+    refresh: (page?: number) => void;
     query: string;
     setQuery: (query: string) => void;
     handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -51,6 +78,7 @@ interface IFiltersProps {
 type MyProps = IFiltersProps & React.HTMLAttributes<HTMLDivElement>;
 
 export const WorkflowFilters: React.FC<MyProps> = ({
+    refresh,
     query,
     setQuery,
     handleKeyDown,
@@ -63,11 +91,11 @@ export const WorkflowFilters: React.FC<MyProps> = ({
 
     const searchButton = (
         <div
-          className={classes.searchButton}
+            className={classes.searchButton}
         >
-          <i className={`${classes.searchIcon} material-symbols-outlined`}>search</i>
+            <i className={`${classes.searchIcon} material-symbols-outlined`}>search</i>
         </div>
-      );
+    );
 
     const optionsStatus = [
         { title: "all", value: "all" },
@@ -78,40 +106,51 @@ export const WorkflowFilters: React.FC<MyProps> = ({
     ];
 
     const optionsSort = [
-        {title: "newest first", value: "desc"},
-        {title: "oldest first", value: "asc"}
+        { title: "newest first", value: "desc" },
+        { title: "oldest first", value: "asc" }
     ];
     return (
         <div>
-        <div className={classes.searchContainer}>
-            <TextField
-                placeholder="Search"
-                value={query}
-                after={searchButton}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                autoComplete="off"
-            />
-        </div>
-        <div className={classes.filterContainer}>
-            Status
-            <InlineDropdown
-                className={classes.dropdown}
-                options={optionsStatus}
-                value={searchType}
-                onItemSelected={setSearchType}
-                optionWidth="180px"
-            />
+            <div className={classes.groupContainer}>
+                <div className={classes.searchContainer}>
+                <TextField
+                    placeholder="Search"
+                    value={query}
+                    after={searchButton}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoComplete="off"
+                />
+                </div>
 
-            Sort by
-            <InlineDropdown
-                className={classes.dropdown}
-                options={optionsSort}
-                value={sortDir}
-                onItemSelected={setSortDir}
-                optionWidth="180px"
-            />
-        </div>
+                <Button
+                    className={`${classes.refreshButton}`}
+                    onClick={() => refresh()}
+                >
+                    <i className={`${classes.refreshIcon} material-symbols-outlined`}>
+                        sync
+                    </i>
+                </Button>
+            </div>
+            <div className={classes.filterContainer}>
+                Status
+                <InlineDropdown
+                    className={classes.dropdown}
+                    options={optionsStatus}
+                    value={searchType}
+                    onItemSelected={setSearchType}
+                    optionWidth="180px"
+                />
+
+                Sort by
+                <InlineDropdown
+                    className={classes.dropdown}
+                    options={optionsSort}
+                    value={sortDir}
+                    onItemSelected={setSortDir}
+                    optionWidth="180px"
+                />
+            </div>
         </div>
     );
 }

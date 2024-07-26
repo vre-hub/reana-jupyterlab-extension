@@ -1,5 +1,8 @@
 export const EXTENSION_ID = 'jupyterlab_reana';
 
+export const PAGE_SIZE = 5;
+export const MAX_PAGES = 3;
+
 export const WORKFLOW_STATUSES = [
   "created",
   "deleted",

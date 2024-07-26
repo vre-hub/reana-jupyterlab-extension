@@ -25,7 +25,9 @@ class WorkflowsHandler(APIHandler):
 
             parsed_workflows.append(wf)
 
-        return parsed_workflows
+        data['items'] = parsed_workflows
+
+        return data
 
     def _parse_params(self, params):
         params = {key: params[key][0].decode('utf-8') for key in params if not key.isdigit()}
@@ -37,6 +39,8 @@ class WorkflowsHandler(APIHandler):
             params['search'] = json.dumps({'name': [params['search']]})
 
         params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
+        params['type'] = 'batch'
+        params['size'] = 5
 
         string_params = urlencode(params, quote_via=quote_plus)
 
