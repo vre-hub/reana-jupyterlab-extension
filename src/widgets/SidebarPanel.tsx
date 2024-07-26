@@ -17,6 +17,7 @@ import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
 
 import { requestAPI } from '../utils/ApiRequest';
+import { WorkflowDetails } from '../components/@Workflows/WorkflowDetails';
 
 
 const useStyles = createUseStyles({
@@ -85,6 +86,7 @@ const Panel: React.FC = () => {
   const [activeMenu, setActiveMenu] = React.useState(2);
   const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
   const [workflows, setWorkflows] = React.useState<IReanaWorkflow[]>([]);
+  const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>('');
 
   const menus = [
     { title: 'Workflows', value: 1, right: false, disabled: !hasConnection },
@@ -104,12 +106,17 @@ const Panel: React.FC = () => {
         </div>
         <div className={activeMenu !== 1 ? classes.hidden : ''}>
           {activeMenu === 1 && (
-            <div>
-              <HorizontalHeading title="Your workflows" />
-              <WorkflowList
-                workflows={workflows}
-                setWorkflows={(v: any) => setWorkflows(v)}
-              />
+            <div>           
+              {
+                selectedWorkflow !== '' ? (
+                  <WorkflowDetails workflowId={selectedWorkflow} setWorkflowId={setSelectedWorkflow} />
+                ) :
+                <WorkflowList
+                  workflows={workflows}
+                  setWorkflows={setWorkflows}
+                  setSelectedWorkflow={setSelectedWorkflow}
+                />
+              }    
             </div>    
           )}
         </div>

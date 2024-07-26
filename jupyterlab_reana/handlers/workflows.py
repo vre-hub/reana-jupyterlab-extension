@@ -61,3 +61,17 @@ class WorkflowsHandler(APIHandler):
                 'message': str(e)
             }))
 
+
+class WorkflowStatusHandler(APIHandler):
+    def get(self, workflow_id):
+        server_url = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+
+        try:
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
+            self.finish(response.json())
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
