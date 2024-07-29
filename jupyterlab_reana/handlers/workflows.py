@@ -13,10 +13,6 @@ class WorkflowsHandler(APIHandler):
         parsed_workflow['id'] = workflow.get('id', '')
         info = workflow.get('name', '').rsplit('.', 1)
         parsed_workflow['name'], parsed_workflow['run'] = info
-        parsed_workflow['createdAt'] = workflow.get('created')
-        parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at')
-        parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at')
-        parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at')
         parsed_workflow['status'] = workflow.get('status')
 
         return parsed_workflow
@@ -65,14 +61,21 @@ class WorkflowsHandler(APIHandler):
                 'message': str(e)
             }))
 
-class WorkflowLogsHandler(WorkflowsHandler):
+class WorkflowLogsHandler(APIHandler):
+    def _parse_logs(self, workflow):
+        wf = workflow.json()
+        logs = wf.get('logs', '')
+        return json.dumps({'engineLogs': logs})
+    
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/logs?access_token={access_token}")
-            self.finish(response.json())
+            logs = self._parse_logs(response)
+            self.finish(logs)
+
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',
@@ -80,15 +83,32 @@ class WorkflowLogsHandler(WorkflowsHandler):
             }))
 
         
-class WorkflowStatusHandler(APIHandler):    
+class WorkflowStatusHandler(APIHandler):
+    def _parse_workflow(self, workflow):
+        parsed_workflow = {}
+
+        parsed_workflow['id'] = workflow.get('id', '')
+        info = workflow.get('name', '').rsplit('.', 1)
+        parsed_workflow['name'], parsed_workflow['run'] = info
+        parsed_workflow['status'] = workflow.get('status')
+        parsed_workflow['createdAt'] = workflow.get('created')
+        parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at')
+        parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at')
+        parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at')
+        parsed_workflow['status'] = workflow.get('status')
+
+        return parsed_workflow
+
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
+            print(response.json())
             workflow = self._parse_workflow(response.json())
             self.finish(workflow)
+
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',
