@@ -11,7 +11,7 @@ import { MenuBar } from '../components/MenuBar';
 import { Loading } from '../components/Loading';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
 import { WorkflowList } from '../components/@Workflows/WorkflowsList';
-import { IReanaAuthCredentials, IReanaWorkflow } from '../types';
+import { IReanaAuthCredentials, IReanaWorkflowBase } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
@@ -85,7 +85,7 @@ const Panel: React.FC = () => {
 
   const [activeMenu, setActiveMenu] = React.useState(2);
   const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
-  const [workflows, setWorkflows] = React.useState<IReanaWorkflow[]>([]);
+  const [workflows, setWorkflows] = React.useState<IReanaWorkflowBase[]>([]);
   const [selectedWorkflow, setSelectedWorkflow] = React.useState<string>('');
 
   const menus = [

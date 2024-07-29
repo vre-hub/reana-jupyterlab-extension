@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Loading } from '../Loading';
 
-import { IReanaWorkflow } from '../../types';
+import { IReanaWorkflowBase } from '../../types';
 import { requestAPI } from '../../utils/ApiRequest';
 import { Box } from '../Box';
 import { PAGE_SIZE, statusMapping } from '../../const';
@@ -123,8 +123,8 @@ const useStyles = createUseStyles({
 });
 
 interface IWorkflowsProps {
-    workflows?: IReanaWorkflow[];
-    setWorkflows: { (val: IReanaWorkflow[]): void };
+    workflows?: IReanaWorkflowBase[];
+    setWorkflows: { (val: IReanaWorkflowBase[]): void };
     setSelectedWorkflow: { (val: string): void };
 }
 
