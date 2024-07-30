@@ -28,6 +28,10 @@ const useStyles = createUseStyles({
         color: 'var(--dark-gray)',
         fontSize: '14px',
     },
+    message: {
+        padding: '16px',
+        textAlign: 'center'
+    }
 });
 
 interface IWorkflowLogsProps {
@@ -46,9 +50,17 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
         console.log(selectedIndex);
     }, [selectedIndex]);
 
+    if (stepsData.length === 0) {
+        return (
+            <div className={classes.content}>
+                <p className={classes.message}>No logs available</p>
+            </div>
+        );
+    }
+
     return (
         <div className={classes.content}>
-            <Dropdown 
+            <Dropdown
                 className={classes.dropdown}
                 options={stepsData.map((step, index) => ({ title: step.jobName, value: index }))}
                 value={selectedIndex}
@@ -56,12 +68,12 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
                 optionWidth='200px'
             />
 
-<div className={classes.tooltipGroup}>
-            <TooltipIfTruncated tooltipText={'TO-DO. Use getDurationString()'} tooltipIcon='timer' backgroundColor='var(--light-teal)'/>
-            <TooltipIfTruncated tooltipText={stepsData[selectedIndex].computeBackend} tooltipIcon='cloud'/>
-            <TooltipIfTruncated tooltipText={stepsData[selectedIndex].dockerImg} tooltipIcon='deployed_code'/>
-            <TooltipIfTruncated tooltipText={stepsData[selectedIndex].cmd} tooltipIcon='attach_money'/>
-          </div>
+            <div className={classes.tooltipGroup}>
+                <TooltipIfTruncated tooltipText={'getDurationString()'} tooltipIcon='timer' backgroundColor='var(--light-teal)' />
+                <TooltipIfTruncated tooltipText={stepsData[selectedIndex].computeBackend} tooltipIcon='cloud' />
+                <TooltipIfTruncated tooltipText={stepsData[selectedIndex].dockerImg} tooltipIcon='deployed_code' />
+                <TooltipIfTruncated tooltipText={stepsData[selectedIndex].cmd} tooltipIcon='attach_money' />
+            </div>
             <pre className={classes.panel}>{stepsData[selectedIndex].logs}</pre>
         </div>
     );

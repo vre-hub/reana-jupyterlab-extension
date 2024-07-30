@@ -177,9 +177,9 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
             <div className={classes.container}>
                 {loading || !workflowDetails ? <Loading /> : (
                     <div className={classes.content}>
-                        {activeMenu === 2 && <WorkflowEngineLogs workflow={workflowDetails} />}
-                        {activeMenu === 3 && <WorkflowJobLogs workflow={workflowDetails} />}
-                        { activeMenu === 1 && <div>
+                        {activeMenu === 1 && <WorkflowEngineLogs workflow={workflowDetails} />}
+                        {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} />}
+                        { activeMenu === 3 && <div>
                             <div>ID: {workflowDetails?.id}</div>
                             <div>Name: {workflowDetails?.name}</div>
                             <div>Run: {workflowDetails?.run}</div>

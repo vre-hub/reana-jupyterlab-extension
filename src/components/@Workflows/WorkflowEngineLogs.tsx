@@ -12,6 +12,10 @@ const useStyles = createUseStyles({
         height: '500px',
         overflow: 'auto',
         width: '100%'
+    },
+    message: {
+        padding: '16px',
+        textAlign: 'center'
     }
 });
 
@@ -26,7 +30,14 @@ export const WorkflowEngineLogs: React.FC<MyProps> = ({ workflow }) => {
 
     return (
         <div className={classes.content}>
-            <pre className={classes.panel}>{workflow.engineLogs}</pre>
+            {
+                workflow.engineLogs !== undefined && workflow.engineLogs !== ''
+                ? 
+                <pre className={classes.panel}>{workflow.engineLogs}</pre>
+                :
+                <p className={classes.message}>No logs available</p>
+            }
+
         </div>
     );
 }
