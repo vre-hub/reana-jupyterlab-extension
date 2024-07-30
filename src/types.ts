@@ -3,11 +3,17 @@ export interface IReanaAuthCredentials {
     accessToken: string;
 };
 
-export interface IReanaWorkflowBase {
+export interface IReanaWorkflowStatus {
     id: string;
     name: string;
     run: string;
     status: string;
+    createdAt: string;
+    startedAt?: string;
+    finishedAt?: string;
+    stoppedAt?: string;
+    finishedJobs: number;
+    totalJobs: number;
 };
 
 export interface IReanaJobLog {
@@ -23,18 +29,9 @@ export interface IReanaJobLog {
     finishedAt: string;
 };
 
-export interface IReanaWorkflowStatus extends IReanaWorkflowBase {
-    createdAt: string;
-    startedAt: string;
-    finishedAt: string;
-    stoppedAt: string;
-    jobLogs: IReanaJobLog[];
-    finishedJobs: number;
-    totalJobs: number;
-};
-
-export interface IReanaWorkflowEngineLogs {
+export interface IReanaWorkflowLogs {
     engineLogs: string;
+    jobLogs: { [key: string]: IReanaJobLog };
 };
 
 export interface IReanaWorkflowWorkspace {
@@ -58,7 +55,7 @@ export interface IReanaWorkflowSpecification {
 
 export interface IReanaWorkflow extends
     IReanaWorkflowStatus, 
-    IReanaWorkflowEngineLogs, 
-    IReanaWorkflowWorkspace, 
-    IReanaWorkflowSpecification {
+    Partial<IReanaWorkflowLogs>, 
+    Partial<IReanaWorkflowWorkspace>, 
+    Partial<IReanaWorkflowSpecification> {
 };

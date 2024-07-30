@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Loading } from '../Loading';
 
-import { IReanaWorkflowBase } from '../../types';
+import { IReanaWorkflowStatus, IReanaWorkflow } from '../../types';
 import { requestAPI } from '../../utils/ApiRequest';
 import { Box } from '../Box';
 import { PAGE_SIZE, statusMapping } from '../../const';
@@ -123,9 +123,9 @@ const useStyles = createUseStyles({
 });
 
 interface IWorkflowsProps {
-    workflows?: IReanaWorkflowBase[];
-    setWorkflows: { (val: IReanaWorkflowBase[]): void };
-    setSelectedWorkflow: { (val: string): void };
+    workflows?: IReanaWorkflowStatus[];
+    setWorkflows: { (val: IReanaWorkflowStatus[]): void };
+    setSelectedWorkflow: { (val: IReanaWorkflow|undefined): void };
 }
 
 type MyProps = IWorkflowsProps & React.HTMLAttributes<HTMLDivElement>;
@@ -212,7 +212,7 @@ export const WorkflowList: React.FC<MyProps> = ({
                                 status,
                             } = workflow;
                             return (
-                                <div key={id} onClick={() => setSelectedWorkflow(id)}>
+                                <div key={id} onClick={() => setSelectedWorkflow(workflow)}>
                                     <Box className={`${classes.workflow} ${status === 'deleted' ? classes.workflow + ' deleted' : ''}`}>
                                         <div className={classes.workflow + ' details-box'}>
                                             <span>

@@ -14,6 +14,10 @@ class WorkflowsHandler(APIHandler):
         info = workflow.get('name', '').rsplit('.', 1)
         parsed_workflow['name'], parsed_workflow['run'] = info
         parsed_workflow['status'] = workflow.get('status')
+        parsed_workflow['createdAt'] = workflow.get('created')
+        parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at', '')
+        parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at', '')
+        parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at', '')
 
         return parsed_workflow
     
@@ -64,8 +68,13 @@ class WorkflowsHandler(APIHandler):
 class WorkflowLogsHandler(APIHandler):
     def _parse_logs(self, workflow):
         wf = workflow.json()
-        logs = wf.get('logs', '')
-        return json.dumps({'engineLogs': logs})
+        logs = json.loads(wf.get('logs', ''))
+        return json.dumps(
+            {
+                'engineLogs': logs['workflow_logs'],
+                'jobLogs': logs['job_logs']
+            }
+        )
     
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
@@ -83,37 +92,32 @@ class WorkflowLogsHandler(APIHandler):
             }))
 
         
-class WorkflowStatusHandler(APIHandler):
-    def _parse_workflow(self, workflow):
-        parsed_workflow = {}
+# class WorkflowStatusHandler(APIHandler):
+#     def _parse_workflow(self, workflow):
+#         parsed_workflow = {}
 
-        parsed_workflow['id'] = workflow.get('id', '')
-        info = workflow.get('name', '').rsplit('.', 1)
-        parsed_workflow['name'], parsed_workflow['run'] = info
-        parsed_workflow['status'] = workflow.get('status')
-        parsed_workflow['createdAt'] = workflow.get('created')
-        parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at')
-        parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at')
-        parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at')
-        parsed_workflow['status'] = workflow.get('status')
+#         parsed_workflow['id'] = workflow.get('id', '')
+#         info = workflow.get('name', '').rsplit('.', 1)
+#         parsed_workflow['name'], parsed_workflow['run'] = info
+#         parsed_workflow['status'] = workflow.get('status')
 
-        return parsed_workflow
+#         return parsed_workflow
 
-    def get(self, workflow_id):
-        server_url = os.getenv('REANA_SERVER_URL', '')
-        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+#     def get(self, workflow_id):
+#         server_url = os.getenv('REANA_SERVER_URL', '')
+#         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
-        try:
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
-            print(response.json())
-            workflow = self._parse_workflow(response.json())
-            self.finish(workflow)
+#         try:
+#             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
+#             print(response.json())
+#             workflow = self._parse_workflow(response.json())
+#             self.finish(workflow)
 
-        except Exception as e:
-            self.finish(json.dumps({
-                'status': 'error',
-                'message': str(e)
-            }))
+#         except Exception as e:
+#             self.finish(json.dumps({
+#                 'status': 'error',
+#                 'message': str(e)
+#             }))
 
 class WorkflowWorkspaceHandler(APIHandler):
     def get(self, workflow_id):

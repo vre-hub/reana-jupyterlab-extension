@@ -7,6 +7,8 @@ import { HorizontalHeading } from '../HorizontalHeading';
 
 import { requestAPI } from '../../utils/ApiRequest';
 import { IReanaWorkflow } from '../../types';
+import { WorkflowEngineLogs } from './WorkflowEngineLogs';
+import { WorkflowJobLogs } from './WorkflowJobLogs';
 
 
 const useStyles = createUseStyles({
@@ -50,17 +52,17 @@ const useStyles = createUseStyles({
 });
 
 interface IWorkflowDetailsProps {
-    workflowId: string;
-    setWorkflowId: (workflowId: string) => void;
+    workflow: IReanaWorkflow;
+    setWorkflow: (workflowId: IReanaWorkflow|undefined) => void;
 }
 
 type MyProps = IWorkflowDetailsProps & React.HTMLAttributes<HTMLDivElement>;
 
-export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }) => {
+export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) => {
     const classes = useStyles();
 
     const [loading, setLoading] = useState(true);
-    const [workflow, setWorkflow] = useState<IReanaWorkflow | null>(null);
+    const [workflowDetails, setWorkflowDetails] = useState<IReanaWorkflow>(workflow);
     const [activeMenu, setActiveMenu] = useState(1);
     const [isWide, setIsWide] = useState(false);
 
@@ -73,7 +75,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }
 
         const resizeObserver = new ResizeObserver((entries) => {
             for (let entry of entries) {
-                setIsWide(entry.contentRect.width > 600);
+                setIsWide(entry.contentRect.width > 630);
             }
         });
 
@@ -86,48 +88,52 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }
     }, []);
     const menus = [
         {
-            title: <i className={`${classes.icon} material-symbols-outlined`}>arrow_back</i>,
+            title:
+                <div className={classes.menuItem} title='Back'>
+                    <i className={`${classes.icon} material-symbols-outlined`}>arrow_back</i>
+                    {isWide && <span>Back</span>}
+                </div>,
             value: 0, right: false
         },
+        // {
+        //     title:
+        //         <div className={classes.menuItem} title='Overview'>
+        //             <i className={`${classes.icon} material-symbols-outlined`}>info</i>
+        //             {isWide && <span>Overview</span>}
+        //         </div>,
+        //     value: 1, right: false
+        // },
         {
-            title: //<i className={`${classes.icon} material-symbols-outlined`}>info</i>,
-                <div className={classes.menuItem}>
-                    <i className={`${classes.icon} material-symbols-outlined`}>info</i>
-                    {isWide && <span>Details</span>}
+            title:
+                <div className={classes.menuItem} title='Engine logs'>
+                    <i className={`${classes.icon} material-symbols-outlined`}>manufacturing</i>
+                    {isWide && <span>Engine logs</span>}
                 </div>,
             value: 1, right: false
         },
         {
-            title: //<i className={`${classes.icon} material-symbols-outlined`}>manufacturing</i>,
-                <div className={classes.menuItem}>
-                    <i className={`${classes.icon} material-symbols-outlined`}>manufacturing</i>
-                    {isWide && <span>Engine logs</span>}
+            title:
+                <div className={classes.menuItem} title='Job logs'>
+                    <i className={`${classes.icon} material-symbols-outlined`}>terminal</i>
+                    {isWide && <span>Job logs</span>}
                 </div>,
             value: 2, right: false
         },
         {
-            title: //<i className={`${classes.icon} material-symbols-outlined`}>terminal</i>,
-                <div className={classes.menuItem}>
-                    <i className={`${classes.icon} material-symbols-outlined`}>terminal</i>
-                    {isWide && <span>Job logs</span>}
+            title:
+                <div className={classes.menuItem} title='Workspace'>
+                    <i className={`${classes.icon} material-symbols-outlined`}>folder</i>
+                    {isWide && <span>Workspace</span>}
                 </div>,
             value: 3, right: false
         },
         {
-            title: 
-                <div className={classes.menuItem}>
-                    <i className={`${classes.icon} material-symbols-outlined`}>folder</i>
-                    {isWide && <span>Workspace</span>}
-                </div>,
-            value: 4, right: false
-        },
-        {
             title:
-                <div className={classes.menuItem}>
+                <div className={classes.menuItem} title='Specification'>
                     <i className={`${classes.icon} material-symbols-outlined`}>code_blocks</i>
                     {isWide && <span>Specification</span>}
                 </div>,
-            value: 5, right: false
+            value: 4, right: false
         }
     ];
 
@@ -135,16 +141,16 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }
         if (loading) {
             const populateWorkflow = async () => {
                 try {
-                    const dataStatus = await requestAPI<IReanaWorkflow>(`workflows/${workflowId}/status`, {
-                        method: 'GET',
-                    });
-                    console.log(dataStatus);
+                    // const dataStatus = await requestAPI<IReanaWorkflow>(`workflows/${workflowId}/status`, {
+                    //     method: 'GET',
+                    // });
+                    // console.log(dataStatus);
 
-                    const dataEngineLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflowId}/logs`, {
+                    const dataEngineLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflow.id}/logs`, {
                         method: 'GET',
                     });
                     console.log(dataEngineLogs);
-                    setWorkflow({ ...workflow, ...dataStatus, ...dataEngineLogs });
+                    setWorkflowDetails({ ...workflowDetails, ...dataEngineLogs });
                     setLoading(false);
                 } catch (e) {
                     console.error(e);
@@ -152,29 +158,33 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflowId, setWorkflowId }
             }
             populateWorkflow();
         }
-    }, [loading, workflowId]);
+    }, [loading, workflow.id]);
 
     useEffect(() => {
         if (activeMenu === 0) {
-            setWorkflowId('');
+            setWorkflow(undefined);
         }
+        console.log(workflowDetails)
     }, [activeMenu]);
 
     return (
         <div>
             <HorizontalHeading title="Workflow Details" />
+            {/* <WorkflowOverview workflow={workflowDetails} /> */}
             <div className={classes.menuBar}>
                 <MenuBar menus={menus} value={activeMenu} onChange={setActiveMenu} />
             </div>
             <div className={classes.container}>
-                {loading ? <Loading /> : (
+                {loading || !workflowDetails ? <Loading /> : (
                     <div className={classes.content}>
-                        <div>
-                            <div>ID: {workflow?.id}</div>
-                            <div>Name: {workflow?.name}</div>
-                            <div>Run: {workflow?.run}</div>
-                            <div>Status: {workflow?.status}</div>
-                        </div>
+                        {activeMenu === 2 && <WorkflowEngineLogs workflow={workflowDetails} />}
+                        {activeMenu === 3 && <WorkflowJobLogs workflow={workflowDetails} />}
+                        { activeMenu === 1 && <div>
+                            <div>ID: {workflowDetails?.id}</div>
+                            <div>Name: {workflowDetails?.name}</div>
+                            <div>Run: {workflowDetails?.run}</div>
+                            <div>Status: {workflowDetails?.status}</div>
+                        </div> }
                     </div>
                 )}
             </div>

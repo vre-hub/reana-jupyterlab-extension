@@ -3,7 +3,7 @@ from jupyter_server.serverapp import ServerApp
 from .connection import EnvVariablesHandler
 from .workflows import (
     WorkflowsHandler, 
-    WorkflowStatusHandler, 
+    #WorkflowStatusHandler, 
     WorkflowLogsHandler, 
     WorkflowWorkspaceHandler, 
     WorkflowSpecificationHandler
@@ -16,7 +16,7 @@ def setup_handlers(server_app: ServerApp) -> None:
     handlers = [
         (url_path_join(base_url, "env"), EnvVariablesHandler),
         (url_path_join(base_url, "workflows", "([^/]+)", "logs"), WorkflowLogsHandler),
-        (url_path_join(base_url, "workflows", "([^/]+)", "status"), WorkflowStatusHandler),
+        #(url_path_join(base_url, "workflows", "([^/]+)", "status"), WorkflowStatusHandler),
         (url_path_join(base_url, "workflows", "([^/]+)", "workspace"), WorkflowWorkspaceHandler),
         (url_path_join(base_url, "workflows", "([^/]+)", "specification"), WorkflowSpecificationHandler),
         (url_path_join(base_url, "workflows"), WorkflowsHandler),
