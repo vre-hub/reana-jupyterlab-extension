@@ -1,10 +1,11 @@
 import { createUseStyles } from 'react-jss';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IReanaWorkflow } from '../../types';
 import { Dropdown } from '../Dropdown';
 import { TooltipIfTruncated } from '../TooltipIfTruncated';
 
-//import { getDurationString } from '../../utils';
+import { getDurationString } from '../../utils';
+import { statusMapping } from '../../const';
 
 
 const useStyles = createUseStyles({
@@ -46,10 +47,6 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const stepsData = workflow?.jobLogs !== undefined ? Object.values(workflow.jobLogs) : [];
 
-    useEffect(() => {
-        console.log(selectedIndex);
-    }, [selectedIndex]);
-
     if (stepsData.length === 0) {
         return (
             <div className={classes.content}>
@@ -69,7 +66,12 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
             />
 
             <div className={classes.tooltipGroup}>
-                <TooltipIfTruncated tooltipText={'getDurationString()'} tooltipIcon='timer' backgroundColor='var(--light-teal)' />
+                
+                <TooltipIfTruncated 
+                    tooltipText={`${stepsData[selectedIndex].status} ${statusMapping[stepsData[selectedIndex].status].preposition} ${getDurationString(stepsData[selectedIndex])}`}
+                    tooltipIcon='timer'
+                    backgroundColor={statusMapping[stepsData[selectedIndex].status].color} 
+                />
                 <TooltipIfTruncated tooltipText={stepsData[selectedIndex].computeBackend} tooltipIcon='cloud' />
                 <TooltipIfTruncated tooltipText={stepsData[selectedIndex].dockerImg} tooltipIcon='deployed_code' />
                 <TooltipIfTruncated tooltipText={stepsData[selectedIndex].cmd} tooltipIcon='attach_money' />

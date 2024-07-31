@@ -15,16 +15,16 @@ export const WORKFLOW_STATUSES = [
 ];
 
 export const statusMapping : { [key: string]: any } = {
-    finished: { icon: "check_circle", color: "green", preposition: "in" },
-    running: { icon: "progress_activity", color: "blue", preposition: "for" },
-    failed: { icon: "close", color: "red", preposition: "after" },
-    created: { icon: "text_snippet", color: "violet" },
+    finished: { icon: "check_circle", color: "var(--green)", preposition: "in" },
+    running: { icon: "progress_activity", color: "var(--blue)", preposition: "for" },
+    failed: { icon: "close", color: "var(--red)", preposition: "after" },
+    created: { icon: "text_snippet", color: "var(--violet)" },
     stopped: {
       icon: "stop_circle",
-      color: "yellow",
+      color: "var(--yellow)",
       preposition: "after",
     },
-    queued: { icon: "hourglass", color: "teal" },
-    pending: { icon: "hourglass_top", color: "teal" },
-    deleted: { icon: "ink_eraser", color: "gray" },
+    queued: { icon: "hourglass", color: "var(--teal)" },
+    pending: { icon: "hourglass_top", color: "var(--teal)" },
+    deleted: { icon: "ink_eraser", color: "var(--gray)" },
 };
