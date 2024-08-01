@@ -33,7 +33,6 @@ class EnvVariablesHandler(APIHandler):
 
             if data.get('status', '500') != '200':
                 self._update_env()
-                print(data)
                 self.finish(json.dumps({
                     'status': 'error',
                     'message': f'Could not connect to the REANA server. {data.get("message", "").capitalize()}'

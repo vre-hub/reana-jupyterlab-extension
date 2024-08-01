@@ -18,6 +18,8 @@ class WorkflowsHandler(APIHandler):
         parsed_workflow['startedAt'] = workflow.get('progress').get('run_started_at', '')
         parsed_workflow['finishedAt'] = workflow.get('progress').get('run_finished_at', '')
         parsed_workflow['stoppedAt'] = workflow.get('progress').get('run_stopped_at', '')
+        parsed_workflow['finishedJobs'] = workflow.get('progress').get('finished', {}).get('total', 0)
+        parsed_workflow['totalJobs'] = workflow.get('progress').get('total', {}).get('total', 0)
 
         return parsed_workflow
     
@@ -92,14 +94,14 @@ class WorkflowLogsHandler(APIHandler):
             }))
 
         
-# class WorkflowStatusHandler(APIHandler):
+# class WorkflowStatusHandler(WorkflowsHandler):
 #     def _parse_workflow(self, workflow):
-#         parsed_workflow = {}
+#         parsed_workflow = super()._parse_workflow(workflow)
 
-#         parsed_workflow['id'] = workflow.get('id', '')
-#         info = workflow.get('name', '').rsplit('.', 1)
-#         parsed_workflow['name'], parsed_workflow['run'] = info
-#         parsed_workflow['status'] = workflow.get('status')
+#         logs = json.loads(workflow.get('logs', ''))
+
+#         parsed_workflow['engineLogs'] = logs.get('workflow_logs', '')
+#         parsed_workflow['jobLogs'] = logs.get('job_logs', {})
 
 #         return parsed_workflow
 
@@ -109,7 +111,6 @@ class WorkflowLogsHandler(APIHandler):
 
 #         try:
 #             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
-#             print(response.json())
 #             workflow = self._parse_workflow(response.json())
 #             self.finish(workflow)
 

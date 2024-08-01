@@ -9,7 +9,7 @@ const useStyles = createUseStyles({
     },
     panel: {
         backgroundColor: 'var(--isabelline)',
-        height: '500px',
+        height: '45vh',
         overflow: 'auto',
         width: '100%'
     },

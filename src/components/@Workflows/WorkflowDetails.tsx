@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 
 import { MenuBar } from '../MenuBar';
 import { Loading } from '../Loading';
-import { HorizontalHeading } from '../HorizontalHeading';
+// import { HorizontalHeading } from '../HorizontalHeading';
 
 import { requestAPI } from '../../utils/ApiRequest';
 import { IReanaWorkflow } from '../../types';
 import { WorkflowEngineLogs } from './WorkflowEngineLogs';
 import { WorkflowJobLogs } from './WorkflowJobLogs';
+import { WorkflowOverview } from './WorkflowOverview';
 
 
 const useStyles = createUseStyles({
@@ -37,7 +38,7 @@ const useStyles = createUseStyles({
         display: 'none'
     },
     icon: {
-        fontSize: '15px',
+        fontSize: '18px',
     },
     menuItem: {
         display: 'flex',
@@ -75,7 +76,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
 
         const resizeObserver = new ResizeObserver((entries) => {
             for (let entry of entries) {
-                setIsWide(entry.contentRect.width > 630);
+                setIsWide(entry.contentRect.width > 470);
             }
         });
 
@@ -86,23 +87,8 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
         }
 
     }, []);
+
     const menus = [
-        {
-            title:
-                <div className={classes.menuItem} title='Back'>
-                    <i className={`${classes.icon} material-symbols-outlined`}>arrow_back</i>
-                    {isWide && <span>Back</span>}
-                </div>,
-            value: 0, right: false
-        },
-        // {
-        //     title:
-        //         <div className={classes.menuItem} title='Overview'>
-        //             <i className={`${classes.icon} material-symbols-outlined`}>info</i>
-        //             {isWide && <span>Overview</span>}
-        //         </div>,
-        //     value: 1, right: false
-        // },
         {
             title:
                 <div className={classes.menuItem} title='Engine logs'>
@@ -141,15 +127,9 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
         if (loading) {
             const populateWorkflow = async () => {
                 try {
-                    // const dataStatus = await requestAPI<IReanaWorkflow>(`workflows/${workflowId}/status`, {
-                    //     method: 'GET',
-                    // });
-                    // console.log(dataStatus);
-
                     const dataEngineLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflow.id}/logs`, {
                         method: 'GET',
                     });
-                    console.log(dataEngineLogs);
                     setWorkflowDetails({ ...workflowDetails, ...dataEngineLogs });
                     setLoading(false);
                 } catch (e) {
@@ -160,17 +140,28 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
         }
     }, [loading, workflow.id]);
 
-    useEffect(() => {
-        if (activeMenu === 0) {
-            setWorkflow(undefined);
+    const refreshWorkflow = async () => {
+        try {
+            setLoading(true);
+            const updatedInfoWorkflow = await requestAPI<any>(`workflows?workflow_id_or_name=${workflow.id}`, {
+                method: 'GET',
+            });
+            setWorkflowDetails({ ...workflowDetails, ...updatedInfoWorkflow?.items[0]});
+            setLoading(false);
         }
-        console.log(workflowDetails)
-    }, [activeMenu]);
+        catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <div>
-            <HorizontalHeading title="Workflow Details" />
-            {/* <WorkflowOverview workflow={workflowDetails} /> */}
+            <WorkflowOverview 
+                workflow={workflowDetails}
+                setWorkflow={setWorkflow}
+                refresh={async () => { await refreshWorkflow() }} 
+                isWide={isWide}
+            />
             <div className={classes.menuBar}>
                 <MenuBar menus={menus} value={activeMenu} onChange={setActiveMenu} />
             </div>

@@ -14,6 +14,13 @@ export const WORKFLOW_STATUSES = [
   "stopped",
 ];
 
+export const NON_FINISHED_STATUSES = [
+  "created",
+  "pending",
+  "queued",
+  "running",
+];
+
 export const statusMapping : { [key: string]: any } = {
     finished: { icon: "check_circle", color: "var(--green)", preposition: "in" },
     running: { icon: "progress_activity", color: "var(--blue)", preposition: "for" },
