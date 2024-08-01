@@ -29,11 +29,12 @@ const useStyles = createUseStyles({
 interface IConnectionProps {
   params?: IReanaAuthCredentials;
   onAuthParamsChange: { (val: IReanaAuthCredentials): void };
+  actionAfterSubmit?: { (): void };
 }
 
 type MyProps = IConnectionProps & React.HTMLAttributes<HTMLDivElement>;
 
-async function checkConnection(server: string, accessToken: string) {
+async function checkConnection(server: string, accessToken: string, actionAfterSubmit?: { (): void }) {
   try {
     const data = await requestAPI<any>('env', {
       method: 'POST',
@@ -67,12 +68,17 @@ async function checkConnection(server: string, accessToken: string) {
         autoClose: 3000,
       }
     )
+  } finally {
+    if (actionAfterSubmit) {
+      actionAfterSubmit();
+    }
   }
 
 }
 export const ConnectionForm: React.FC<MyProps> = ({
   params = { server: '', accessToken: '' },
-  onAuthParamsChange
+  onAuthParamsChange,
+  actionAfterSubmit = () => { }
 }) => {
   const classes = useStyles();
 
@@ -105,7 +111,7 @@ export const ConnectionForm: React.FC<MyProps> = ({
           />
         </div>
         <div className={classes.textFieldContainer}>
-          <Button onClick={() => checkConnection(params.server, params.accessToken)}>Connect</Button>
+          <Button onClick={() => checkConnection(params.server, params.accessToken, actionAfterSubmit)}>Connect</Button>
         </div>
       </div>
     </>

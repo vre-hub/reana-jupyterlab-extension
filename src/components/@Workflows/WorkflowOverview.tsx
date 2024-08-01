@@ -31,7 +31,6 @@ const useStyles = createUseStyles({
             flexShrink: 0,
 
             '& .details-box': {
-                maxWidth: '50%',
                 display: 'flex',
                 alignItems: 'baseline'
             },
@@ -87,7 +86,7 @@ const useStyles = createUseStyles({
         },
     },
     smallFont: {
-        fontSize: '13px'
+        fontSize: '12px'
     },
     statusText : {
         fontSize: '16px',

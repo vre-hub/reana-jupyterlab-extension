@@ -110,7 +110,8 @@ const Panel: React.FC = () => {
               <HorizontalHeading title="Connect to REANA" />
               <ConnectionForm
                 params={authConfig}
-                onAuthParamsChange={v => setAuthConfig(v)}
+                onAuthParamsChange={v => {setAuthConfig(v)}}
+                actionAfterSubmit={() => setSelectedWorkflow(undefined)}
               />
             </div>
           )}
