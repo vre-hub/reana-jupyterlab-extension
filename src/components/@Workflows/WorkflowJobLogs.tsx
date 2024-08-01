@@ -66,9 +66,12 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
             />
 
             <div className={classes.tooltipGroup}>
-                
                 <TooltipIfTruncated 
-                    tooltipText={`${stepsData[selectedIndex].status} ${statusMapping[stepsData[selectedIndex].status].preposition} ${getDurationString(stepsData[selectedIndex])}`}
+                    tooltipText={ 
+                        statusMapping[stepsData[selectedIndex].status]?.preposition ? 
+                        `${stepsData[selectedIndex].status} ${statusMapping[stepsData[selectedIndex].status].preposition} ${getDurationString(stepsData[selectedIndex])}` :
+                        stepsData[selectedIndex].status
+                    }
                     tooltipIcon='timer'
                     backgroundColor={statusMapping[stepsData[selectedIndex].status].color} 
                 />

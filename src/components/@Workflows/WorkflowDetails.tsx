@@ -130,7 +130,6 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
                     const dataEngineLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflow.id}/logs`, {
                         method: 'GET',
                     });
-                    console.log(dataEngineLogs);
                     setWorkflowDetails({ ...workflowDetails, ...dataEngineLogs });
                     setLoading(false);
                 } catch (e) {
@@ -146,7 +145,6 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
             const updatedInfoWorkflow = await requestAPI<any>(`workflows?workflow_id_or_name=${workflow.id}`, {
                 method: 'GET',
             });
-            console.log(updatedInfoWorkflow);
             setWorkflowDetails({ ...workflowDetails, ...updatedInfoWorkflow?.items[0]});
             setLoading(true);
         }
