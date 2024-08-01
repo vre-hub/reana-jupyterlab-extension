@@ -25,7 +25,7 @@ export const statusMapping : { [key: string]: any } = {
     finished: { icon: "check_circle", color: "var(--green)", preposition: "in" },
     running: { icon: "progress_activity", color: "var(--blue)", preposition: "for" },
     failed: { icon: "close", color: "var(--red)", preposition: "after" },
-    created: { icon: "text_snippet", color: "var(--violet)" },
+    created: { icon: "draft", color: "var(--violet)" },
     stopped: {
       icon: "stop_circle",
       color: "var(--yellow)",

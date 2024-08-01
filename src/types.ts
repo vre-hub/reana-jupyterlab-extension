@@ -34,13 +34,15 @@ export interface IReanaWorkflowLogs {
     jobLogs: { [key: string]: IReanaJobLog };
 };
 
+export interface IReanaWorkflowWorkspaceFile {
+    name: string;
+    lastModified: string;
+    size: string;
+};
+
 export interface IReanaWorkflowWorkspace {
     totalFiles: number;
-    files: {
-        name: string;
-        lastModified: string;
-        size: string;
-    }[];
+    files: IReanaWorkflowWorkspaceFile[];
 };
 
 export interface IReanaWorkflowSpecification {

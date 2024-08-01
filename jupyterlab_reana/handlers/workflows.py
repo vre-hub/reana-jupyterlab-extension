@@ -94,13 +94,28 @@ class WorkflowLogsHandler(APIHandler):
             }))
 
 class WorkflowWorkspaceHandler(APIHandler):
+    def _parse_files(self, files):
+        parsed_files = []
+
+        for file in files:
+            parsed_files.append(
+                {
+                    'name': file.get('name'),
+                    'lastModified': file.get('last-modified'),
+                    'size': file.get('size').get('human_readable'),
+                }
+            )
+
+        return parsed_files
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?access_token={access_token}")
-            self.finish(response.json())
+            data = response.json()
+            data['files'] = self._parse_files(data.pop('items'))
+            self.finish(data)
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',

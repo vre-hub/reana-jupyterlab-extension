@@ -9,6 +9,7 @@ import { IReanaWorkflow } from '../../types';
 import { WorkflowOverview } from './WorkflowOverview';
 import { WorkflowEngineLogs } from './WorkflowEngineLogs';
 import { WorkflowJobLogs } from './WorkflowJobLogs';
+import { WorkflowWorkspace } from './WorkflowWorkspace';
 import { WorkflowSpecification } from './WorkflowSpecification';
 
 
@@ -169,7 +170,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
                     <div className={classes.content}>
                         {activeMenu === 1 && <WorkflowEngineLogs workflow={workflowDetails} />}
                         {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} />}
-                        {activeMenu === 3 && <div>Workspace</div> }
+                        {activeMenu === 3 && <WorkflowWorkspace workflow={workflowDetails} setWorkflow={setWorkflowDetails}/> }
                         {activeMenu === 4 && <WorkflowSpecification workflow={workflowDetails} setWorkflow={setWorkflowDetails} />}
                     </div>
                 )}
