@@ -44,13 +44,8 @@ export interface IReanaWorkflowWorkspace {
 };
 
 export interface IReanaWorkflowSpecification {
-    inputs: {
-        files: string[];
-        parameters: { [key: string]: string };
-    }
-    outputs: string[];
-    version: string;
-    workflow: any;
+    parameters: any;
+    specification: any;
 };
 
 export interface IReanaWorkflow extends

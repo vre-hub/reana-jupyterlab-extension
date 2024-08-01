@@ -93,33 +93,6 @@ class WorkflowLogsHandler(APIHandler):
                 'message': str(e)
             }))
 
-        
-# class WorkflowStatusHandler(WorkflowsHandler):
-#     def _parse_workflow(self, workflow):
-#         parsed_workflow = super()._parse_workflow(workflow)
-
-#         logs = json.loads(workflow.get('logs', ''))
-
-#         parsed_workflow['engineLogs'] = logs.get('workflow_logs', '')
-#         parsed_workflow['jobLogs'] = logs.get('job_logs', {})
-
-#         return parsed_workflow
-
-#     def get(self, workflow_id):
-#         server_url = os.getenv('REANA_SERVER_URL', '')
-#         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
-
-#         try:
-#             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/status?access_token={access_token}")
-#             workflow = self._parse_workflow(response.json())
-#             self.finish(workflow)
-
-#         except Exception as e:
-#             self.finish(json.dumps({
-#                 'status': 'error',
-#                 'message': str(e)
-#             }))
-
 class WorkflowWorkspaceHandler(APIHandler):
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')

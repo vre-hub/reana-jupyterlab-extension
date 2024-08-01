@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react';
 
 import { MenuBar } from '../MenuBar';
 import { Loading } from '../Loading';
-// import { HorizontalHeading } from '../HorizontalHeading';
 
 import { requestAPI } from '../../utils/ApiRequest';
 import { IReanaWorkflow } from '../../types';
+import { WorkflowOverview } from './WorkflowOverview';
 import { WorkflowEngineLogs } from './WorkflowEngineLogs';
 import { WorkflowJobLogs } from './WorkflowJobLogs';
-import { WorkflowOverview } from './WorkflowOverview';
+import { WorkflowSpecification } from './WorkflowSpecification';
 
 
 const useStyles = createUseStyles({
@@ -169,12 +169,8 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
                     <div className={classes.content}>
                         {activeMenu === 1 && <WorkflowEngineLogs workflow={workflowDetails} />}
                         {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} />}
-                        { activeMenu === 3 && <div>
-                            <div>ID: {workflowDetails?.id}</div>
-                            <div>Name: {workflowDetails?.name}</div>
-                            <div>Run: {workflowDetails?.run}</div>
-                            <div>Status: {workflowDetails?.status}</div>
-                        </div> }
+                        {activeMenu === 3 && <div>Workspace</div> }
+                        {activeMenu === 4 && <WorkflowSpecification workflow={workflowDetails} setWorkflow={setWorkflowDetails} />}
                     </div>
                 )}
             </div>
