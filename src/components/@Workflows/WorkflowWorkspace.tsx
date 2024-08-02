@@ -159,10 +159,9 @@ export const WorkflowWorkspace: React.FC<MyProps> = ({ workflow, setWorkflow, is
             }
             for (const file of files) {
                 const wfName = workflow.name + '.' + workflow.run;
-                const data = await requestAPI<any>(`workflows/${wfName}/workspace/${encodeURIComponent(file)}`, {
+                await requestAPI<any>(`workflows/${wfName}/workspace/${encodeURIComponent(file)}`, {
                     method: 'GET',
                 });
-                console.log(data);
             }
             
             Notification.success(
