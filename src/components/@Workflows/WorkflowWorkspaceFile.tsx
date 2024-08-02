@@ -7,6 +7,7 @@
  *
  * Authors:
  * - Muhammad Aditya Hilmy, <mhilmy@hey.com>, 2020
+ * - Rubén Pérez Mercado, <ruben.perez.mercado@cern.ch>, 2024
  */
 
 import React from 'react';
@@ -24,7 +25,7 @@ const useStyles = createUseStyles({
         flexDirection: 'row',
         fontSize: '9pt',
         alignItems: 'center',
-        padding: '8px 16px 8px 16px',
+        padding: '8px 16px',
         cursor: 'pointer'
     },
     listItemCollapsed: {
@@ -32,10 +33,6 @@ const useStyles = createUseStyles({
         '&:hover': {
             backgroundColor: 'var(--jp-layout-color2)'
         }
-    },
-    listItemExpanded: {
-        extend: 'listItem',
-        backgroundColor: 'var(--jp-layout-color2)'
     },
     textContainer: {
         flex: 2,
@@ -50,18 +47,6 @@ const useStyles = createUseStyles({
     icon: {
         fontSize: '16px',
         verticalAlign: 'middle'
-    },
-    fileIcon: {
-        extend: 'icon',
-        color: '#66B100'
-    },
-    containerIcon: {
-        extend: 'icon',
-        color: '#5DC0FD'
-    },
-    datasetIcon: {
-        extend: 'icon',
-        color: '#FFB100'
     },
     sizeContainer: {
         padding: '0 8px',
@@ -81,6 +66,9 @@ const useStyles = createUseStyles({
 export interface IWorkspaceFileProps {
     key: number;
     file: IReanaWorkflowWorkspaceFile;
+    checked: boolean;
+    isSidebarWide: boolean;
+    checkboxDisabled: boolean;
     onClick: () => void;
     style?: any;
 }
@@ -88,6 +76,9 @@ export interface IWorkspaceFileProps {
 export const WorkflowWorkspaceFile: React.FC<IWorkspaceFileProps> = ({
     key,
     file,
+    checked,
+    isSidebarWide,
+    checkboxDisabled,
     onClick,
     style
 }) => {
@@ -101,11 +92,12 @@ export const WorkflowWorkspaceFile: React.FC<IWorkspaceFileProps> = ({
                 key={key}
             >
                 <div className={classes.iconContainer}>
-                    <i className='material-symbols-outlined'>draft</i>
+                    <i className={`material-symbols-outlined ${classes.icon}`}>draft</i>
                 </div>
                 <div className={classes.textContainer}>{file.name}</div>
                 <div className={classes.sizeContainer}>{file.size}</div>
-                <div className={classes.lastModifiedContainer}>{new Date(file.lastModified).toLocaleString()}</div>
+                {isSidebarWide && <div className={classes.lastModifiedContainer}>{new Date(file.lastModified).toLocaleString()}</div>}
+                <input type='checkbox' id={file.name} name='checkbox' checked={checked} disabled={checkboxDisabled}/>
             </div>
         </div>
     );

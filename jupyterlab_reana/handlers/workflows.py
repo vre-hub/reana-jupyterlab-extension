@@ -4,6 +4,13 @@ import json
 import requests
 from urllib.parse import quote_plus, urlencode
 
+# import ../const.py file
+from ..const import (
+    WORKFLOWS_PAGE_SIZE,
+    WORKFLOWS_TYPE,
+    WORKSPACE_PAGE_SIZE
+)
+
 endpoint = 'workflows'
 
 class WorkflowsHandler(APIHandler):
@@ -45,8 +52,8 @@ class WorkflowsHandler(APIHandler):
             params['search'] = json.dumps({'name': [params['search']]})
 
         params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
-        params['type'] = 'batch'
-        params['size'] = 5
+        params['type'] = WORKFLOWS_TYPE
+        params['size'] = WORKFLOWS_PAGE_SIZE
 
         string_params = urlencode(params, quote_via=quote_plus)
 
@@ -107,12 +114,27 @@ class WorkflowWorkspaceHandler(APIHandler):
             )
 
         return parsed_files
+    
+    def _parse_params(self, params):
+        params = {key: params[key][0].decode('utf-8') for key in params if not key.isdigit()}
+
+        if 'search' in params:
+            params['search'] = json.dumps({'name': [params['search']]})
+
+        params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
+        params['size'] = WORKSPACE_PAGE_SIZE
+
+        string_params = urlencode(params, quote_via=quote_plus)
+
+        return string_params
+    
     def get(self, workflow_id):
+        params = self.request.query_arguments
+        string_params = self._parse_params(params)
         server_url = os.getenv('REANA_SERVER_URL', '')
-        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?access_token={access_token}")
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?{string_params}")
             data = response.json()
             data['files'] = self._parse_files(data.pop('items'))
             self.finish(data)
@@ -130,6 +152,32 @@ class WorkflowSpecificationHandler(APIHandler):
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/specification?access_token={access_token}")
             self.finish(response.json())
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+class WorkspaceFilesHandler(APIHandler):
+    def get(self, workflow_name, file_name):
+        server_url = os.getenv('REANA_SERVER_URL', '')
+        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+
+        try:
+            file = quote_plus(file_name)
+            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_name}/workspace/{file}?access_token={access_token}")
+
+            path = file_name.rsplit('/', 1)
+            path = path[0] if len(path) > 1 else ''
+            
+            os.makedirs(workflow_name + '/' + path, exist_ok=True)
+
+            with open(workflow_name + '/' + file_name, 'wb') as f:
+                f.write(response.content)
+            self.finish(json.dumps({
+                'status': 'success',
+                'message': f'{file_name} downloaded'
+            }))
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',

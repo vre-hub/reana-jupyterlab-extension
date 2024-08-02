@@ -237,7 +237,7 @@ export const WorkflowList: React.FC<MyProps> = ({
                     )
                 }
                 {navigation.total > PAGE_SIZE &&
-                    <Pagination currentPage={page} navigation={navigation} onPageChange={refreshWorkflows} />
+                    <Pagination currentPage={page} navigation={navigation} onPageChange={refreshWorkflows} pageSize={PAGE_SIZE}/>
                 }
             </div>
         </div>

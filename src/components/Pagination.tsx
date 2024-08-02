@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { createUseStyles } from 'react-jss';
-import { MAX_PAGES, PAGE_SIZE } from '../const';
+import { MAX_PAGES } from '../const';
 
 
 const useStyles = createUseStyles({
@@ -33,12 +33,13 @@ interface IPaginationProps {
     currentPage: number;
     navigation: {hasNext: boolean, hasPrev: boolean, total: number};
     onPageChange: (page: number) => void;
+    pageSize: number;
 }
 
-export const Pagination: React.FC<IPaginationProps> = ({ currentPage, navigation, onPageChange }) => {
+export const Pagination: React.FC<IPaginationProps> = ({ currentPage, navigation, onPageChange, pageSize }) => {
     const classes = useStyles();
 
-    const numberOfPages = Math.ceil(navigation.total / PAGE_SIZE);
+    const numberOfPages = Math.ceil(navigation.total / pageSize);
 
     const handlePageChange = (page: number) => {
         onPageChange(page);

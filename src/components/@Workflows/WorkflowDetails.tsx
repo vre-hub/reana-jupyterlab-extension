@@ -77,7 +77,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
 
         const resizeObserver = new ResizeObserver((entries) => {
             for (let entry of entries) {
-                setIsWide(entry.contentRect.width > 470);
+                setIsWide(entry.contentRect.width > 480);
             }
         });
 
@@ -170,7 +170,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
                     <div className={classes.content}>
                         {activeMenu === 1 && <WorkflowEngineLogs workflow={workflowDetails} />}
                         {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} />}
-                        {activeMenu === 3 && <WorkflowWorkspace workflow={workflowDetails} setWorkflow={setWorkflowDetails}/> }
+                        {activeMenu === 3 && <WorkflowWorkspace workflow={workflowDetails} setWorkflow={setWorkflowDetails} isSidebarWide={isWide}/> }
                         {activeMenu === 4 && <WorkflowSpecification workflow={workflowDetails} setWorkflow={setWorkflowDetails} />}
                     </div>
                 )}

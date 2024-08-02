@@ -5,7 +5,8 @@ from .workflows import (
     WorkflowsHandler,
     WorkflowLogsHandler, 
     WorkflowWorkspaceHandler, 
-    WorkflowSpecificationHandler
+    WorkflowSpecificationHandler,
+    WorkspaceFilesHandler,
 )
 
 def setup_handlers(server_app: ServerApp) -> None:
@@ -14,8 +15,9 @@ def setup_handlers(server_app: ServerApp) -> None:
     base_url = url_path_join(web_app.settings["base_url"], "jupyterlab_reana")
     handlers = [
         (url_path_join(base_url, "env"), EnvVariablesHandler),
-        (url_path_join(base_url, "workflows", "([^/]+)", "logs"), WorkflowLogsHandler),
+        (url_path_join(base_url, "workflows", "([^/]+)", "workspace", "([^/]+)"), WorkspaceFilesHandler),
         (url_path_join(base_url, "workflows", "([^/]+)", "workspace"), WorkflowWorkspaceHandler),
+        (url_path_join(base_url, "workflows", "([^/]+)", "logs"), WorkflowLogsHandler),
         (url_path_join(base_url, "workflows", "([^/]+)", "specification"), WorkflowSpecificationHandler),
         (url_path_join(base_url, "workflows"), WorkflowsHandler),
     ]

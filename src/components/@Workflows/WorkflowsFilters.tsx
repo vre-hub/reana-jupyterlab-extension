@@ -45,7 +45,6 @@ const useStyles = createUseStyles({
     searchIcon: {
         fontSize: '18px',
     },
-
     refreshIcon: {
         marginRight: '2px',
         fontSize: '18px',
@@ -128,16 +127,6 @@ export const WorkflowFilters: React.FC<MyProps> = ({
                         sync
                     </i>
                 </Button>
-
-                { /* TODO: Add workspace button (?) */}
-                {/* <Button
-                    className={`${classes.actionsButton}`}
-                    onClick={() => refresh()}
-                >
-                    <i className={`${classes.refreshIcon} material-symbols-outlined`}>
-                        plus
-                    </i>
-                </Button> */}
             </div>
             <div className={classes.filterContainer}>
                 Status
