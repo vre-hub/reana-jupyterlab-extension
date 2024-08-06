@@ -21,6 +21,8 @@ RUN python3 -m pip install .
 RUN jupyter server extension enable --py jupyterlab_reana
 USER $NB_UID
 
+WORKDIR /home/jovyan
+
 # Expose the port and run JupyterLab
 EXPOSE 8888
 CMD ["jupyter", "lab", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--no-browser", "--allow-root"]

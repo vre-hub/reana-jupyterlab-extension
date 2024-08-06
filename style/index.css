@@ -2,6 +2,7 @@
 :root {
     --sepia: #f5ecec;
     --raven: #667380;
+    --platinum: #e8e8e8;
     --light-gray: #cccccc;
     --gray: #767676;
     --dark-gray: #383838;
@@ -11,6 +12,8 @@
     --violet: #6435c9;
     --yellow: #fbbd08;
     --teal: #009c95;
+    --light-teal: #baeded;
+    --isabelline: #f5ecec; 
 }
 
 @import url('base.css');

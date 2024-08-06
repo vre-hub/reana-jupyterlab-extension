@@ -2,7 +2,7 @@
 //   -*- coding: utf-8 -*-
 
 //   This file is part of REANA.
-//   Copyright (C) 2020, 2022 CERN.
+//   Copyright (C) 2020, 2022, 2024 CERN.
 
 //   REANA is free software; you can redistribute it and/or modify it
 //   under the terms of the MIT License; see LICENSE file for more details.
@@ -10,7 +10,7 @@
 
 import PropTypes from "prop-types";
 //import { WorkflowSorting } from "./WorkflowsSorting";
-import { InlineDropdown } from "./InlineDropdown";
+import { InlineDropdown } from "../InlineDropdown";
 import { createUseStyles } from "react-jss";
 import { WORKFLOW_STATUSES } from "../../const";
 import React from "react";
@@ -20,7 +20,7 @@ import { Button } from "../Button";
 const useStyles = createUseStyles({
     groupContainer: {
         display: "flex",
-        alignItems: "center",
+        alignItems: "stretch",
         padding: '8px 16px 8px 16px'
     },
     searchContainer: {
@@ -45,7 +45,6 @@ const useStyles = createUseStyles({
     searchIcon: {
         fontSize: '18px',
     },
-
     refreshIcon: {
         marginRight: '2px',
         fontSize: '18px',
@@ -54,10 +53,9 @@ const useStyles = createUseStyles({
         alignItems: 'center',
     },
 
-    refreshButton: {
+    actionsButton: {
         alignItems: 'center',
-        height: '35.6px',
-        width: '35.6px',
+        width: '36px',
         cursor: 'pointer',
         '&:hover': {
             background: 'var(--jp-layout-color2)'
@@ -90,9 +88,7 @@ export const WorkflowFilters: React.FC<MyProps> = ({
     const classes = useStyles();
 
     const searchButton = (
-        <div
-            className={classes.searchButton}
-        >
+        <div className={classes.searchButton}>
             <i className={`${classes.searchIcon} material-symbols-outlined`}>search</i>
         </div>
     );
@@ -124,7 +120,7 @@ export const WorkflowFilters: React.FC<MyProps> = ({
                 </div>
 
                 <Button
-                    className={`${classes.refreshButton}`}
+                    className={`${classes.actionsButton}`}
                     onClick={() => refresh()}
                 >
                     <i className={`${classes.refreshIcon} material-symbols-outlined`}>

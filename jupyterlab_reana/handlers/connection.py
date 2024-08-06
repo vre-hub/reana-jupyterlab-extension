@@ -3,7 +3,7 @@ import os
 import json
 import requests
 
-endpoint = 'ping'
+endpoint = 'you'
 class EnvVariablesHandler(APIHandler):
     def _update_env(self, access_token='', server=''):
         os.environ['REANA_SERVER_URL'] = server
@@ -26,17 +26,14 @@ class EnvVariablesHandler(APIHandler):
             access_token = data.get('accessToken', '')
 
             self._update_env(access_token, server)
-
             response = requests.get(f"{server}/api/{endpoint}?access_token={access_token}")
 
             data = response.json()
-
-            if data.get('status', '500') != '200':
+            if response.status_code != 200 or 'reana_server_version' not in data:
                 self._update_env()
-                print(data)
                 self.finish(json.dumps({
                     'status': 'error',
-                    'message': f'Could not connect to the REANA server. {data.get("message", "").capitalize()}'
+                    'message': f'Could not connect to the REANA server. {data.get("message", "Server not valid.").capitalize()}'
                 }))
             else:
                 self.finish(json.dumps({
@@ -49,5 +46,5 @@ class EnvVariablesHandler(APIHandler):
             print(e)
             self.finish(json.dumps({
                 'status': 'error',
-                'message': 'Something went wrong. Please try again.'
+                'message': 'Could not connect to the REANA server. Please check the server URL and access token.'
             }))

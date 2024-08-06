@@ -11,12 +11,13 @@ import { MenuBar } from '../components/MenuBar';
 import { Loading } from '../components/Loading';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
 import { WorkflowList } from '../components/@Workflows/WorkflowsList';
-import { IReanaAuthCredentials, IReanaWorkflow } from '../types';
+import { IReanaAuthCredentials, IReanaWorkflow, IReanaWorkflowStatus } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
 
 import { requestAPI } from '../utils/ApiRequest';
+import { WorkflowDetails } from '../components/@Workflows/WorkflowDetails';
 
 
 const useStyles = createUseStyles({
@@ -82,13 +83,14 @@ const Panel: React.FC = () => {
 
   const hasConnection = useStoreState(UIStore, s => s.hasConnection);
 
-  const [activeMenu, setActiveMenu] = React.useState(2);
+  const [activeMenu, setActiveMenu] = React.useState(1);
   const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
-  const [workflows, setWorkflows] = React.useState<IReanaWorkflow[]>([]);
+  const [workflows, setWorkflows] = React.useState<IReanaWorkflowStatus[]>([]);
+  const [selectedWorkflow, setSelectedWorkflow] = React.useState<IReanaWorkflow|undefined>();
 
   const menus = [
-    { title: 'Workflows', value: 1, right: false, disabled: !hasConnection },
-    { title: 'Connect', value: 2, right: false }
+    { title: 'Connect', value: 1, right: false },
+    { title: 'Workflows', value: 2, right: false, disabled: !hasConnection },
   ];
 
   if (loading) {
@@ -105,23 +107,29 @@ const Panel: React.FC = () => {
         <div className={activeMenu !== 1 ? classes.hidden : ''}>
           {activeMenu === 1 && (
             <div>
-              <HorizontalHeading title="Your workflows" />
-              <WorkflowList
-                workflows={workflows}
-                setWorkflows={(v: any) => setWorkflows(v)}
+              <HorizontalHeading title="Connect to REANA" />
+              <ConnectionForm
+                params={authConfig}
+                onAuthParamsChange={v => {setAuthConfig(v)}}
+                actionAfterSubmit={() => setSelectedWorkflow(undefined)}
               />
-            </div>    
+            </div>
           )}
         </div>
         <div className={activeMenu !== 2 ? classes.hidden : ''}>
           {activeMenu === 2 && (
-            <div>
-              <HorizontalHeading title="Connect to REANA" />
-              <ConnectionForm
-                params={authConfig}
-                onAuthParamsChange={v => setAuthConfig(v)}
-              />
-            </div>
+            <div>           
+              {
+                selectedWorkflow !== undefined ? (
+                  <WorkflowDetails workflow={selectedWorkflow} setWorkflow={setSelectedWorkflow} />
+                ) :
+                <WorkflowList
+                  workflows={workflows}
+                  setWorkflows={setWorkflows}
+                  setSelectedWorkflow={setSelectedWorkflow}
+                />
+              }    
+            </div>    
           )}
         </div>
       </div>

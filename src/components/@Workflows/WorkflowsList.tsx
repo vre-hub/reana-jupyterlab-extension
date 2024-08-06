@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Loading } from '../Loading';
 
-import { IReanaWorkflow } from '../../types';
+import { IReanaWorkflowStatus, IReanaWorkflow } from '../../types';
 import { requestAPI } from '../../utils/ApiRequest';
 import { Box } from '../Box';
 import { PAGE_SIZE, statusMapping } from '../../const';
 import { WorkflowFilters } from './WorkflowsFilters';
 import { Pagination } from '../Pagination';
+import { HorizontalHeading } from '../HorizontalHeading';
 
 const useStyles = createUseStyles({
     container: {
@@ -122,8 +123,9 @@ const useStyles = createUseStyles({
 });
 
 interface IWorkflowsProps {
-    workflows?: IReanaWorkflow[];
-    setWorkflows: { (val: IReanaWorkflow[]): void };
+    workflows?: IReanaWorkflowStatus[];
+    setWorkflows: { (val: IReanaWorkflowStatus[]): void };
+    setSelectedWorkflow: { (val: IReanaWorkflow|undefined): void };
 }
 
 type MyProps = IWorkflowsProps & React.HTMLAttributes<HTMLDivElement>;
@@ -132,6 +134,7 @@ type MyProps = IWorkflowsProps & React.HTMLAttributes<HTMLDivElement>;
 export const WorkflowList: React.FC<MyProps> = ({
     workflows = [],
     setWorkflows,
+    setSelectedWorkflow,
 }) => {
     const classes = useStyles();
     const [loading, setLoading] = React.useState(true);
@@ -146,10 +149,9 @@ export const WorkflowList: React.FC<MyProps> = ({
         if (loading) {
             const populateWorkflows = async () => {
                 try {
-                    const data = await requestAPI<any>(`workflows?&status=${searchType}&sort=${sortDir}&search=${query}&page=${page}`, {
+                    const data = await requestAPI<any>(`workflows?&status=${searchType}&sort=${sortDir}&search=${query}&page=${page}&include_progress=True`, {
                         method: 'GET',
                     });
-                    console.log(data);
                     setWorkflows('items' in data ? data.items : []);
                     setNavigation({hasNext: data.hasNext, hasPrev: data.hasPrev, total: data.total});
                 } catch (error) {
@@ -184,6 +186,7 @@ export const WorkflowList: React.FC<MyProps> = ({
 
     return (
         <div>
+            <HorizontalHeading title="Your workflows" />
             <WorkflowFilters
                 refresh={refreshWorkflows}
                 query={query}
@@ -209,7 +212,7 @@ export const WorkflowList: React.FC<MyProps> = ({
                                 status,
                             } = workflow;
                             return (
-                                <div key={id}>
+                                <div key={id} onClick={() => setSelectedWorkflow(workflow)}>
                                     <Box className={`${classes.workflow} ${status === 'deleted' ? classes.workflow + ' deleted' : ''}`}>
                                         <div className={classes.workflow + ' details-box'}>
                                             <span>
@@ -234,7 +237,7 @@ export const WorkflowList: React.FC<MyProps> = ({
                     )
                 }
                 {navigation.total > PAGE_SIZE &&
-                    <Pagination currentPage={page} navigation={navigation} onPageChange={refreshWorkflows} />
+                    <Pagination currentPage={page} navigation={navigation} onPageChange={refreshWorkflows} pageSize={PAGE_SIZE}/>
                 }
             </div>
         </div>
