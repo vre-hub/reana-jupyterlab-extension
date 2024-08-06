@@ -1,7 +1,9 @@
 from jupyter_server.base.handlers import APIHandler
 import os
 import json
+import re
 import requests
+import subprocess
 from urllib.parse import quote_plus, urlencode
 
 # import ../const.py file
@@ -178,6 +180,41 @@ class WorkspaceFilesHandler(APIHandler):
                 'status': 'success',
                 'message': f'{file_name} downloaded'
             }))
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+
+class WorkflowCreateHandler(APIHandler):
+    def post(self):
+        try:
+            body = json.loads(self.request.body)
+
+            wf_name = body.get('name')
+            print(os.getcwd())
+            path = os.path.join(os.getcwd(), body.get('path'))
+
+            print(path)
+
+            if '..' in path or not os.path.isdir(path):
+                raise Exception('Invalid path')
+            
+            # Check that the workflow name does not have characters that may cause issues
+            if re.fullmatch(r'\w+', wf_name) is None:
+                raise Exception('Invalid workflow name')
+            
+            result = subprocess.run(['reana-client', 'run', '-w', wf_name], cwd=path, capture_output=True)
+
+            if result.returncode != 0:
+                raise Exception(result.stderr.decode('utf-8'))
+            
+            self.finish(json.dumps({
+                'status': 'success',
+                'message': 'Workflow created'
+            }))
+
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',

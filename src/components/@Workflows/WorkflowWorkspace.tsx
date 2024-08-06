@@ -1,5 +1,5 @@
 import { createUseStyles } from 'react-jss';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IReanaWorkflow } from '../../types';
 import { WORKSPACE_PAGE_SIZE } from '../../const';
 
@@ -98,13 +98,13 @@ type MyProps = IWorkflowWorkspaceProps & React.HTMLAttributes<HTMLDivElement>;
 
 export const WorkflowWorkspace: React.FC<MyProps> = ({ workflow, setWorkflow, isSidebarWide }) => {
     const classes = useStyles();
-    const [selectedFiles, setSelectedFiles] = React.useState<string[]>([]);
-    const [page, setPage] = React.useState(1);
-    const [navigation, setNavigation] = React.useState({ hasNext: false, hasPrev: false, total: 0 });
-    const [query, setQuery] = React.useState('');
-    const [lastQuery, setLastQuery] = React.useState('');
-    const [loading, setLoading] = React.useState(true);
-    const [downloadLoading, setDownloadLoading] = React.useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [page, setPage] = useState(1);
+    const [navigation, setNavigation] = useState({ hasNext: false, hasPrev: false, total: 0 });
+    const [query, setQuery] = useState('');
+    const [lastQuery, setLastQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [downloadLoading, setDownloadLoading] = useState(false);
 
     const searchButton = (
         <div className={classes.searchButton}>
