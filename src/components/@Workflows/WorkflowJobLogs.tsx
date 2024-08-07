@@ -37,11 +37,12 @@ const useStyles = createUseStyles({
 
 interface IWorkflowLogsProps {
     workflow: IReanaWorkflow;
+    refreshedAt: Date;
 }
 
 type MyProps = IWorkflowLogsProps & React.HTMLAttributes<HTMLDivElement>;
 
-export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
+export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow, refreshedAt }) => {
     const classes = useStyles();
 
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -69,7 +70,7 @@ export const WorkflowJobLogs: React.FC<MyProps> = ({ workflow }) => {
                 <TooltipIfTruncated 
                     tooltipText={ 
                         statusMapping[stepsData[selectedIndex].status]?.preposition ? 
-                        `${stepsData[selectedIndex].status} ${statusMapping[stepsData[selectedIndex].status].preposition} ${getDurationString(stepsData[selectedIndex])}` :
+                        `${stepsData[selectedIndex].status} ${statusMapping[stepsData[selectedIndex].status].preposition} ${getDurationString(stepsData[selectedIndex], refreshedAt)}` :
                         stepsData[selectedIndex].status
                     }
                     tooltipIcon='timer'

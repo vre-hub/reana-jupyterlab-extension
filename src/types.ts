@@ -60,5 +60,5 @@ export interface IReanaWorkflow extends
 export interface IReanaCreateParams {
     name: string;
     path: string;
-    runtimeParams: Object;
+    runtimeParams?: string;
 };

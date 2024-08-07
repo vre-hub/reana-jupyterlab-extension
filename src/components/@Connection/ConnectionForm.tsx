@@ -19,11 +19,11 @@ const useStyles = createUseStyles({
   textFieldContainer: {
     margin: '8px 0 8px 0'
   },
-  // warning: {
-  //   margin: '8px 8px 16px 8px',
-  //   color: 'var(--jp-ui-font-color2)',
-  //   fontSize: '9pt'
-  // },
+  buttonsContainer: {
+    extend: 'textFieldContainer',
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
 });
 
 interface IConnectionProps {
@@ -110,7 +110,7 @@ export const ConnectionForm: React.FC<MyProps> = ({
             onChange={e => onAccessTokenChange(e.target.value)}
           />
         </div>
-        <div className={classes.textFieldContainer}>
+        <div className={classes.buttonsContainer}>
           <Button onClick={() => checkConnection(params.server, params.accessToken, actionAfterSubmit)}>Connect</Button>
         </div>
       </div>

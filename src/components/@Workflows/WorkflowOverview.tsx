@@ -14,6 +14,7 @@ import { Button } from "../Button";
 import { IReanaWorkflow } from "../../types";
 import { statusMapping, NON_FINISHED_STATUSES } from "../../const";
 import { getDurationString } from "../../utils";
+import { UIStore } from "../../stores/UIStore";
 
 const useStyles = createUseStyles({
     groupContainer: {
@@ -126,7 +127,8 @@ const useStyles = createUseStyles({
 interface IOverviewProps {
     workflow: IReanaWorkflow;
     setWorkflow: (workflow: IReanaWorkflow | undefined) => void;
-    refresh: (workflow: IReanaWorkflow) => void; // Refresh now has to call 'status'
+    refresh: (workflow: IReanaWorkflow) => void;
+    refreshedAt: Date;
     isWide: boolean;
 }
 
@@ -136,6 +138,7 @@ export const WorkflowOverview: React.FC<MyProps> = ({
     workflow,
     setWorkflow,
     refresh,
+    refreshedAt,
     isWide
 }) => {
     const classes = useStyles();
@@ -145,7 +148,7 @@ export const WorkflowOverview: React.FC<MyProps> = ({
             <div className={classes.groupContainer}>
                 <Button
                     className={`${classes.actionsButton}`}
-                    onClick={() => setWorkflow(undefined)}
+                    onClick={() => {setWorkflow(undefined); UIStore.update(s => {s.selectedWorkflow = null})}}
                 >
                     <i className={`${classes.buttonIcon} material-symbols-outlined`}>
                         arrow_back
@@ -178,7 +181,7 @@ export const WorkflowOverview: React.FC<MyProps> = ({
                                     >
                                         {workflow.status}
                                     </span>{" "}
-                                    {statusMapping[workflow.status].preposition} {getDurationString(workflow)}
+                                    {statusMapping[workflow.status].preposition} {getDurationString(workflow, refreshedAt)}
                                     {
                                         NON_FINISHED_STATUSES.includes(workflow.status) &&
                                         <span onClick={() => refresh(workflow)} className={classes.refresh}>

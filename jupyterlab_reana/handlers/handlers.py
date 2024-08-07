@@ -7,7 +7,8 @@ from .workflows import (
     WorkflowWorkspaceHandler, 
     WorkflowSpecificationHandler,
     WorkspaceFilesHandler,
-    WorkflowCreateHandler
+    WorkflowCreateHandler,
+    WorkflowValidateHandler
 )
 
 def setup_handlers(server_app: ServerApp) -> None:
@@ -22,5 +23,6 @@ def setup_handlers(server_app: ServerApp) -> None:
         (url_path_join(base_url, "workflows", "([^/]+)", "specification"), WorkflowSpecificationHandler),
         (url_path_join(base_url, "workflows"), WorkflowsHandler),
         (url_path_join(base_url, "run"), WorkflowCreateHandler),
+        (url_path_join(base_url, "validate"), WorkflowValidateHandler)
     ]
     web_app.add_handlers(host_pattern, handlers)
