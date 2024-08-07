@@ -149,7 +149,7 @@ export const WorkflowList: React.FC<MyProps> = ({
         if (loading) {
             const populateWorkflows = async () => {
                 try {
-                    const data = await requestAPI<any>(`workflows?&status=${searchType}&sort=${sortDir}&search=${query}&page=${page}&include_progress=True`, {
+                    const data = await requestAPI<any>(`workflows?&status=${searchType}&sort=${sortDir}&search=${query}&page=${page}`, {
                         method: 'GET',
                     });
                     setWorkflows('items' in data ? data.items : []);
