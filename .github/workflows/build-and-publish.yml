@@ -1,8 +1,9 @@
 name: Install dependencies and build
 
 on:
-  push: 
-    branches: 'actions'
+  release:
+    types:
+      - created
 
 jobs:
   build:
