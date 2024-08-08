@@ -1,0 +1,38 @@
+name: Install dependencies and build
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    name: Build and Publish to PyPI
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/reana-jupyterlab
+
+    permissions:
+      id-token: write
+      
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup
+    - uses: ./.github/actions/test
+    - uses: ./.github/actions/build-ext
+    - uses: ./.github/actions/post-test
+    
+    - name: Package the extension
+      run: |
+        set -eux
+
+        pip install build
+        python -m build --sdist
+        pip uninstall -y "jupyterlab_reana" jupyterlab
+
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true
