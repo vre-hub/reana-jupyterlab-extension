@@ -1,0 +1,10 @@
+name: "Test"
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      run: |
+        set -eux
+        jlpm run test
+      shell: bash
+    
