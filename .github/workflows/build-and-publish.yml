@@ -1,11 +1,12 @@
 name: Install dependencies and build
 
 on:
-  push:
-    tags: 'v*'
+  push: 
+    branches: 'actions'
 
 jobs:
   build:
+    name: Build and Publish to PyPI
     runs-on: ubuntu-latest
 
     environment:
