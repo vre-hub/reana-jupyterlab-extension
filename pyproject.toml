@@ -23,6 +23,9 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
+    "notebook<7",
+    "jupyterlab>=4.0.0,<5",
+    "reana-client@git+https://github.com/mdonadoni/reana-client.git@vre-summer-24"
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
