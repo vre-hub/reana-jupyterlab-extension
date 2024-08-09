@@ -25,7 +25,6 @@ classifiers = [
 dependencies = [
     "notebook<7",
     "jupyterlab>=4.0.0,<5",
-    { url = "git+https://github.com/mdonadoni/reana-client.git@vre-summer-24", name = "reana-client" }
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
