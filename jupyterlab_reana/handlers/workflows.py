@@ -194,17 +194,19 @@ class WorkflowCreateHandler(APIHandler):
             body = json.loads(self.request.body)
 
             wf_name = body.get('name')
-            print(os.getcwd())
-            path = os.path.join(os.getcwd(), body.get('path'))
 
-            if '..' in path or not os.path.isdir(path):
+            path = os.path.join(os.getcwd(), body.get('path'))
+            path_split = path.rsplit('/', 1)
+            workspace, yaml_file = path_split
+
+            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
                 raise Exception('Invalid path')
             
             # Check that the workflow name does not have characters that may cause issues
             if re.fullmatch(r'\w+', wf_name) is None:
                 raise Exception('Invalid workflow name')
             
-            result = subprocess.run(['reana-client', 'run', '-w', wf_name], cwd=path, capture_output=True)
+            result = subprocess.run(['reana-client', 'run', '-w', wf_name, '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:
                 raise Exception(result.stderr.decode('utf-8'))
@@ -226,10 +228,13 @@ class WorkflowValidateHandler(APIHandler):
             body = json.loads(self.request.body)
             path = os.path.join(os.getcwd(), body.get('path'))
 
-            if '..' in path or not os.path.isdir(path):
+            path_split = path.rsplit('/', 1)
+            workspace, yaml_file = path_split
+
+            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
                 raise Exception('Invalid path')
             
-            result = subprocess.run(['reana-client', 'validate'], cwd=path, capture_output=True)
+            result = subprocess.run(['reana-client', 'validate', '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:
                 raise Exception(result.stderr.decode('utf-8'))

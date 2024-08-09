@@ -1,6 +1,7 @@
 from jupyter_server.utils import url_path_join
 from jupyter_server.serverapp import ServerApp
 from .connection import EnvVariablesHandler
+from .files import FileBrowserHandler
 from .workflows import (
     WorkflowsHandler,
     WorkflowLogsHandler, 
@@ -8,7 +9,7 @@ from .workflows import (
     WorkflowSpecificationHandler,
     WorkspaceFilesHandler,
     WorkflowCreateHandler,
-    WorkflowValidateHandler
+    WorkflowValidateHandler,
 )
 
 def setup_handlers(server_app: ServerApp) -> None:
@@ -23,6 +24,7 @@ def setup_handlers(server_app: ServerApp) -> None:
         (url_path_join(base_url, "workflows", "([^/]+)", "specification"), WorkflowSpecificationHandler),
         (url_path_join(base_url, "workflows"), WorkflowsHandler),
         (url_path_join(base_url, "run"), WorkflowCreateHandler),
-        (url_path_join(base_url, "validate"), WorkflowValidateHandler)
+        (url_path_join(base_url, "validate"), WorkflowValidateHandler),
+        (url_path_join(base_url, "files"), FileBrowserHandler),
     ]
     web_app.add_handlers(host_pattern, handlers)

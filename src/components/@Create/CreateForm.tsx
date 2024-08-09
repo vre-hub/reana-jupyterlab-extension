@@ -8,6 +8,7 @@ import { requestAPI } from '../../utils/ApiRequest';
 
 import { Notification } from '@jupyterlab/apputils';
 import { HorizontalHeading } from '../HorizontalHeading';
+import { FileBrowser } from '../FileBrowser';
 
 const useStyles = createUseStyles({
     container: {
@@ -18,6 +19,15 @@ const useStyles = createUseStyles({
     },
     textFieldContainer: {
         margin: '8px 0 8px 0'
+    },
+    groupContainer: {
+        display: "flex",
+        alignItems: "stretch",
+    },
+    fileBrowserTextFieldContainer: {
+        flexGrow: 1,
+        marginRight: '2px',
+        minWidth: 0
     },
     buttonsContainer: {
         extend: 'textFieldContainer',
@@ -31,7 +41,7 @@ const useStyles = createUseStyles({
         opacity: 0.5
     },
     panel: {
-        maxHeight: '40vh',
+        maxHeight: '30vh',
         overflow: 'auto',
         width: '100%',
         marginTop: '8px',
@@ -46,7 +56,16 @@ const useStyles = createUseStyles({
     successPanel: {
         extend: 'panel',
         backgroundColor: 'var(--light-teal)'
-    }
+    },
+    icon: {
+        fontSize: '18px'
+    },
+    textFieldButton: {
+        cursor: 'pointer',
+        alignItems: 'center',
+        padding: '8px 8px 8px 4px',
+        lineHeight: 0,
+    },
 });
 
 interface ICreateProps {
@@ -63,7 +82,8 @@ export const CreateForm: React.FC<MyProps> = ({
     const classes = useStyles();
 
     const [loading, setLoading] = useState(false);
-    const [output, setOutput] = useState({message: '', status: ''});
+    const [output, setOutput] = useState({ message: '', status: '' });
+    const [openFileBrowser, setOpenFileBrowser] = useState(false);
 
     const onNameChange = (name: string) => {
         onParamsChange({ ...params, name });
@@ -71,6 +91,7 @@ export const CreateForm: React.FC<MyProps> = ({
 
     const onPathChange = (path: string) => {
         onParamsChange({ ...params, path });
+        setOpenFileBrowser(false);
     };
 
 
@@ -84,9 +105,9 @@ export const CreateForm: React.FC<MyProps> = ({
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             setOutput(data);
-    
+
         } catch (error) {
             Notification.error(
                 'Connection Error',
@@ -97,7 +118,7 @@ export const CreateForm: React.FC<MyProps> = ({
         } finally {
             setLoading(false);
         }
-    
+
     }
 
     const validateWorkflow = async (path: string) => {
@@ -111,7 +132,7 @@ export const CreateForm: React.FC<MyProps> = ({
                 }
             });
             setOutput(data);
-    
+
         } catch (error) {
             Notification.error(
                 'Connection Error',
@@ -123,6 +144,18 @@ export const CreateForm: React.FC<MyProps> = ({
             setLoading(false);
         }
     }
+
+    const openFileBrowserButton = (
+        <div className={classes.textFieldButton} onClick={() => {setOpenFileBrowser(!openFileBrowser)}}>
+            <i className={`${classes.icon} material-symbols-outlined`}>folder_open</i>
+        </div>
+    );
+
+    const unsetPathButton = (
+        <div className={classes.textFieldButton} onClick={() => onPathChange('')}>
+            <i className={`${classes.icon} material-symbols-outlined`}>close</i>
+        </div>
+    );
 
     return (
         <>
@@ -137,23 +170,26 @@ export const CreateForm: React.FC<MyProps> = ({
                     />
                 </div>
                 <div className={classes.textFieldContainer}>
-                    <div className={classes.label}>Path</div>
-                    <TextField
-                        placeholder="Path"
-                        disabled={loading}
-                        value={params.path}
-                        onChange={e => onPathChange(e.target.value)}
-                    />
+                    <div className={classes.label}>YAML file</div>
+                            <TextField
+                                placeholder="No file selected"
+                                readOnly
+                                disabled={loading}
+                                value={params.path}
+                                after={params.path === '' ? openFileBrowserButton : [unsetPathButton, openFileBrowserButton]}
+                            />
                 </div>
+
+                {openFileBrowser && <FileBrowser onSelectFile={onPathChange} />}
                 <div className={classes.buttonsContainer}>
-                    <Button 
+                    <Button
                         onClick={() => validateWorkflow(params.path)}
                         className={classes.button}
                         disabled={loading}
                     >
                         Validate
                     </Button>
-                    <Button 
+                    <Button
                         onClick={() => createWorkflow(params.name, params.path)}
                         disabled={loading}
                     >

@@ -62,3 +62,9 @@ export interface IReanaCreateParams {
     path: string;
     runtimeParams?: string;
 };
+
+export interface IFileEntry {
+    name: string;
+    type: 'file' | 'directory';
+    path: string;
+}
