@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
   tabItem: {
     float: 'left',
     display: 'block',
-    padding: '8px 12px 8px 12px',
+    padding: '8px 10px',
     textTransform: 'uppercase',
     borderRadius: '4px 4px 0 0',
     fontSize: '9pt',

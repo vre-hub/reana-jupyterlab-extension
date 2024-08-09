@@ -25,7 +25,7 @@ const useStyles = createUseStyles({
     },
     specPanelAlone: {
         extend: 'panel',
-        height: '60vh'
+        height: '55vh'
     },
     message: {
         padding: '16px',

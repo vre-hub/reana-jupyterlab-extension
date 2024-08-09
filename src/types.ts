@@ -56,3 +56,15 @@ export interface IReanaWorkflow extends
     Partial<IReanaWorkflowWorkspace>, 
     Partial<IReanaWorkflowSpecification> {
 };
+
+export interface IReanaCreateParams {
+    name: string;
+    path: string;
+    runtimeParams?: string;
+};
+
+export interface IFileEntry {
+    name: string;
+    type: 'file' | 'directory';
+    path: string;
+}

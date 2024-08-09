@@ -10,8 +10,9 @@ import { Header } from '../components/Header';
 import { MenuBar } from '../components/MenuBar';
 import { Loading } from '../components/Loading';
 import { ConnectionForm } from '../components/@Connection/ConnectionForm';
+import { CreateForm } from '../components/@Create/CreateForm';
 import { WorkflowList } from '../components/@Workflows/WorkflowsList';
-import { IReanaAuthCredentials, IReanaWorkflow, IReanaWorkflowStatus } from '../types';
+import { IReanaAuthCredentials, IReanaWorkflow, IReanaWorkflowStatus, IReanaCreateParams } from '../types';
 import { UIStore } from '../stores/UIStore';
 import { useStoreState } from 'pullstate';
 import { HorizontalHeading } from '../components/HorizontalHeading';
@@ -87,10 +88,12 @@ const Panel: React.FC = () => {
   const [authConfig, setAuthConfig] = React.useState<IReanaAuthCredentials>();
   const [workflows, setWorkflows] = React.useState<IReanaWorkflowStatus[]>([]);
   const [selectedWorkflow, setSelectedWorkflow] = React.useState<IReanaWorkflow|undefined>();
+  const [creationParamsConfig, setCreationParamsConfig] = React.useState<IReanaCreateParams>();
 
   const menus = [
     { title: 'Connect', value: 1, right: false },
     { title: 'Workflows', value: 2, right: false, disabled: !hasConnection },
+    { title: 'Create', value: 3, right: false, disabled: !hasConnection }
   ];
 
   if (loading) {
@@ -130,6 +133,17 @@ const Panel: React.FC = () => {
                 />
               }    
             </div>    
+          )}
+        </div>
+        <div className={activeMenu !== 3 ? classes.hidden : ''}>
+          {activeMenu === 3 && (
+            <div>
+              <HorizontalHeading title="Create a Reana workflow" />
+              <CreateForm
+                params={creationParamsConfig}
+                onParamsChange={v => {setCreationParamsConfig(v)}}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { createUseStyles } from 'react-jss';
 import React, { useState, useEffect } from 'react';
 
+import { UIStore } from '../../stores/UIStore';
+
 import { MenuBar } from '../MenuBar';
 import { Loading } from '../Loading';
 
@@ -64,7 +66,8 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
     const classes = useStyles();
 
     const [loading, setLoading] = useState(true);
-    const [workflowDetails, setWorkflowDetails] = useState<IReanaWorkflow>(workflow);
+    const [workflowDetails, setWorkflowDetails] = useState<IReanaWorkflow>(UIStore.useState(s => s.selectedWorkflow) || workflow);
+    const [refreshedAt, setRefreshedAt] = useState(new Date());
     const [activeMenu, setActiveMenu] = useState(1);
     const [isWide, setIsWide] = useState(false);
 
@@ -128,10 +131,15 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
         if (loading) {
             const populateWorkflow = async () => {
                 try {
-                    const dataEngineLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflow.id}/logs`, {
+                    const dataLogs = await requestAPI<IReanaWorkflow>(`workflows/${workflow.id}/logs`, {
                         method: 'GET',
                     });
-                    setWorkflowDetails({ ...workflowDetails, ...dataEngineLogs });
+
+                    UIStore.update(s => {
+                        s.selectedWorkflow = { ...workflowDetails, ...dataLogs };
+                    });
+
+                    setWorkflowDetails({ ...workflowDetails, ...dataLogs });
                     setLoading(false);
                 } catch (e) {
                     console.error(e);
@@ -146,20 +154,27 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
             const updatedInfoWorkflow = await requestAPI<any>(`workflows?workflow_id_or_name=${workflow.id}`, {
                 method: 'GET',
             });
+
+            UIStore.update(s => {
+                s.selectedWorkflow = { ...workflowDetails, ...updatedInfoWorkflow?.items[0] };
+            });
+
             setWorkflowDetails({ ...workflowDetails, ...updatedInfoWorkflow?.items[0]});
+            setRefreshedAt(new Date());
             setLoading(true);
         }
         catch (e) {
             console.error(e);
         }
     }
-
+    
     return (
         <div>
             <WorkflowOverview 
                 workflow={workflowDetails}
                 setWorkflow={setWorkflow}
-                refresh={async () => { await refreshWorkflow() }} 
+                refresh={async () => { await refreshWorkflow() }}
+                refreshedAt={refreshedAt} 
                 isWide={isWide}
             />
             <div className={classes.menuBar}>
@@ -169,8 +184,8 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
                 {loading || !workflowDetails ? <Loading /> : (
                     <div className={classes.content}>
                         {activeMenu === 1 && <WorkflowEngineLogs workflow={workflowDetails} />}
-                        {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} />}
-                        {activeMenu === 3 && <WorkflowWorkspace workflow={workflowDetails} setWorkflow={setWorkflowDetails} isSidebarWide={isWide}/> }
+                        {activeMenu === 2 && <WorkflowJobLogs workflow={workflowDetails} refreshedAt={refreshedAt} />}
+                        {activeMenu === 3 && <WorkflowWorkspace workflow={workflowDetails} setWorkflow={setWorkflowDetails} isSidebarWide={isWide} /> }
                         {activeMenu === 4 && <WorkflowSpecification workflow={workflowDetails} setWorkflow={setWorkflowDetails} />}
                     </div>
                 )}

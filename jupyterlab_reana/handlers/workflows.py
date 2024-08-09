@@ -1,7 +1,9 @@
 from jupyter_server.base.handlers import APIHandler
 import os
 import json
+import re
 import requests
+import subprocess
 from urllib.parse import quote_plus, urlencode
 
 # import ../const.py file
@@ -54,6 +56,7 @@ class WorkflowsHandler(APIHandler):
         params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
         params['type'] = WORKFLOWS_TYPE
         params['size'] = WORKFLOWS_PAGE_SIZE
+        params['include_progress'] = True
 
         string_params = urlencode(params, quote_via=quote_plus)
 
@@ -178,6 +181,69 @@ class WorkspaceFilesHandler(APIHandler):
                 'status': 'success',
                 'message': f'{file_name} downloaded'
             }))
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+
+class WorkflowCreateHandler(APIHandler):
+    def post(self):
+        try:
+            body = json.loads(self.request.body)
+
+            wf_name = body.get('name')
+
+            path = os.path.join(os.getcwd(), body.get('path'))
+            path_split = path.rsplit('/', 1)
+            workspace, yaml_file = path_split
+
+            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
+                raise Exception('Invalid path')
+            
+            # Check that the workflow name does not have characters that may cause issues
+            if re.fullmatch(r'\w+', wf_name) is None:
+                raise Exception('Invalid workflow name')
+            
+            result = subprocess.run(['reana-client', 'run', '-w', wf_name, '-f', yaml_file], cwd=workspace, capture_output=True)
+
+            if result.returncode != 0:
+                raise Exception(result.stderr.decode('utf-8'))
+            
+            self.finish(json.dumps({
+                'status': 'success',
+                'message': 'Workflow created'
+            }))
+
+        except Exception as e:
+            self.finish(json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
+
+class WorkflowValidateHandler(APIHandler):
+    def post(self):
+        try:
+            body = json.loads(self.request.body)
+            path = os.path.join(os.getcwd(), body.get('path'))
+
+            path_split = path.rsplit('/', 1)
+            workspace, yaml_file = path_split
+
+            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
+                raise Exception('Invalid path')
+            
+            result = subprocess.run(['reana-client', 'validate', '-f', yaml_file], cwd=workspace, capture_output=True)
+
+            if result.returncode != 0:
+                raise Exception(result.stderr.decode('utf-8'))
+            
+            self.finish(json.dumps({
+                'status': 'success',
+                'message': result.stdout.decode('utf-8')
+            }))
+
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',
