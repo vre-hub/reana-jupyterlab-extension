@@ -170,7 +170,7 @@ export const CreateForm: React.FC<MyProps> = ({
                     />
                 </div>
                 <div className={classes.textFieldContainer}>
-                    <div className={classes.label}>YAML file</div>
+                    <div className={classes.label}>YAML File</div>
                             <TextField
                                 placeholder="No file selected"
                                 readOnly
@@ -181,17 +181,18 @@ export const CreateForm: React.FC<MyProps> = ({
                 </div>
 
                 {openFileBrowser && <FileBrowser onSelectFile={onPathChange} />}
+
                 <div className={classes.buttonsContainer}>
                     <Button
                         onClick={() => validateWorkflow(params.path)}
                         className={classes.button}
-                        disabled={loading}
+                        disabled={loading || params.path === '' || params.name === ''}
                     >
                         Validate
                     </Button>
                     <Button
                         onClick={() => createWorkflow(params.name, params.path)}
-                        disabled={loading}
+                        disabled={loading || params.path === '' || params.name === ''}
                     >
                         Create & Run
                     </Button>
