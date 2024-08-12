@@ -33,12 +33,19 @@ const useStyles = createUseStyles({
 
             '& .details-box': {
                 display: 'flex',
-                alignItems: 'baseline'
+                alignItems: 'baseline',
+                maxWidth: '60%',
             },
         },
 
         '& .right-box': {
             padding: '0 2px 0 16px',
+        },
+
+        '& .name-container': { 
+            whiteSpace: 'normal',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
         },
 
         '& .name, & .status, & .status-icon, & .refresh': {
@@ -55,6 +62,12 @@ const useStyles = createUseStyles({
 
         '& .run': {
             padding: '0 0.8em'
+        },
+
+        '& .date': {
+            display: 'block',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
         },
 
         '& .status-icon': {
@@ -160,11 +173,11 @@ export const WorkflowOverview: React.FC<MyProps> = ({
                 <section className='info'>
                     <div className='details-box'>
                         <span className={`material-symbols-outlined status-icon ${workflow.status}`}>{statusMapping[workflow.status].icon}</span>
-                        <div>
+                        <div className="name-container">
                             <span className='name'>{workflow.name}</span>
                             <span className='run'>#{workflow.run}</span>
 
-                            <div className={!isWide ? classes.smallFont : ''} title={workflow.finishedAt || workflow.startedAt || workflow.createdAt}>
+                            <div className={`date ${!isWide ? classes.smallFont : ''}`} title={workflow.finishedAt || workflow.startedAt || workflow.createdAt}>
                                 {workflow.finishedAt
                                     ? `Finished: ${new Date(workflow.finishedAt).toLocaleString()}`
                                     : workflow.startedAt
