@@ -1,5 +1,5 @@
 {
-    "name": "jupyterlab_reana",
+    "name": "reana_jupyterlab",
     "version": "0.1.0",
     "description": "Reana JupyterLab plugin",
     "keywords": [
@@ -38,7 +38,7 @@
         "clean": "jlpm clean:lib",
         "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-        "clean:labextension": "rimraf jupyterlab_reana/labextension jupyterlab_reana/_version.py",
+        "clean:labextension": "rimraf reana_jupyterlab/labextension reana_jupyterlab/_version.py",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -108,7 +108,7 @@
     },
     "jupyterlab": {
         "extension": true,
-        "outputDir": "jupyterlab_reana/labextension"
+        "outputDir": "reana_jupyterlab/labextension"
     },
     "eslintIgnore": [
         "node_modules",

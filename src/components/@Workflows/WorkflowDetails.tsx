@@ -72,7 +72,7 @@ export const WorkflowDetails: React.FC<MyProps> = ({ workflow, setWorkflow }) =>
     const [isWide, setIsWide] = useState(false);
 
     useEffect(() => {
-        const sidebar = document.getElementById('jupyterlab_reana:panel');
+        const sidebar = document.getElementById('reana_jupyterlab:panel');
 
         if (!sidebar) {
             return;

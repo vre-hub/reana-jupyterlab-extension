@@ -1,7 +1,7 @@
 {
     "ServerApp": {
       "jpserver_extensions": {
-        "jupyterlab_reana.server": true
+        "reana_jupyterlab.server": true
       }
     }
   }

@@ -1,4 +1,4 @@
-export const EXTENSION_ID = 'jupyterlab_reana';
+export const EXTENSION_ID = 'reana_jupyterlab';
 
 export const PAGE_SIZE = 5;
 export const WORKSPACE_PAGE_SIZE = 8;
