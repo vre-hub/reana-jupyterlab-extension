@@ -16,6 +16,6 @@ test('should emit an activation console message', async ({ page }) => {
   await page.goto();
 
   expect(
-    logs.filter(s => s === 'JupyterLab extension jupyterlab_reana is activated!')
+    logs.filter(s => s === 'JupyterLab extension reana_jupyterlab is activated!')
   ).toHaveLength(1);
 });

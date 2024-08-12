@@ -19,4 +19,4 @@ def _load_jupyter_server_extension(lab_app):  # pragma: no cover
         JupyterLab application instance
     """
     setup_handlers(lab_app)
-    lab_app.log.info("Registered Reana JupyterLab extension at URL path /jupyterlab_reana")
+    lab_app.log.info("Registered Reana JupyterLab extension at URL path /reana_jupyterlab")

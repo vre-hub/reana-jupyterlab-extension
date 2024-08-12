@@ -14,5 +14,5 @@ runs:
       shell: bash
 
     - name: Enable server extension
-      run: jupyter server extension enable --py jupyterlab_reana
+      run: jupyter server extension enable --py reana_jupyterlab
       shell: bash

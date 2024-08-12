@@ -3,7 +3,7 @@ requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0
 build-backend = "hatchling.build"
 
 [project]
-name = "jupyterlab_reana"
+name = "reana_jupyterlab"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.8"
@@ -35,24 +35,24 @@ source = "nodejs"
 fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["jupyterlab_reana/labextension"]
+artifacts = ["reana_jupyterlab/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlab_reana/labextension" = "share/jupyter/labextensions/jupyterlab_reana"
-"install.json" = "share/jupyter/labextensions/jupyterlab_reana/install.json"
+"reana_jupyterlab/labextension" = "share/jupyter/labextensions/reana_jupyterlab"
+"install.json" = "share/jupyter/labextensions/reana_jupyterlab/install.json"
 
 [tool.hatch.build.hooks.version]
-path = "jupyterlab_reana/_version.py"
+path = "reana_jupyterlab/_version.py"
 
 [tool.hatch.build.hooks.jupyter-builder]
 dependencies = ["hatch-jupyter-builder>=0.5"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "jupyterlab_reana/labextension/static/style.js",
-    "jupyterlab_reana/labextension/package.json",
+    "reana_jupyterlab/labextension/static/style.js",
+    "reana_jupyterlab/labextension/package.json",
 ]
-skip-if-exists = ["jupyterlab_reana/labextension/static/style.js"]
+skip-if-exists = ["reana_jupyterlab/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
@@ -62,7 +62,7 @@ npm = ["jlpm"]
 build_cmd = "install:extension"
 npm = ["jlpm"]
 source_dir = "src"
-build_dir = "jupyterlab_reana/labextension"
+build_dir = "reana_jupyterlab/labextension"
 
 [tool.jupyter-releaser.options]
 version_cmd = "hatch version"

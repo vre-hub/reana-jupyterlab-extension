@@ -4,8 +4,8 @@ runs:
   steps:
     - name: Extension checks
       run: |
-        jupyter server extension list 2>&1 | grep -ie "jupyterlab_reana.*OK"
-        jupyter labextension list 2>&1 | grep -ie "jupyterlab_reana.*OK"
+        jupyter server extension list 2>&1 | grep -ie "reana_jupyterlab.*OK"
+        jupyter labextension list 2>&1 | grep -ie "reana_jupyterlab.*OK"
       shell: bash
     - name: Browser check
       run: python -m jupyterlab.browser_check

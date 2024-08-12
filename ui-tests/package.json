@@ -1,7 +1,7 @@
 {
-  "name": "jupyterlab_reana-ui-tests",
+  "name": "reana_jupyterlab-ui-tests",
   "version": "1.0.0",
-  "description": "JupyterLab jupyterlab_reana Integration Tests",
+  "description": "JupyterLab reana_jupyterlab Integration Tests",
   "private": true,
   "scripts": {
     "start": "jupyter lab --config jupyter_server_test_config.py",

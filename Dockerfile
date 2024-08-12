@@ -18,7 +18,7 @@ USER root
 RUN jlpm && jlpm run build
 
 RUN python3 -m pip install .
-RUN jupyter server extension enable --py jupyterlab_reana
+RUN jupyter server extension enable --py reana_jupyterlab
 USER $NB_UID
 
 WORKDIR /home/jovyan

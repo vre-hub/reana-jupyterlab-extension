@@ -29,7 +29,7 @@ function activateSidebarPanel(
 }
 
 /**
- * Initialization data for the jupyterlab_reana extension.
+ * Initialization data for the reana_jupyterlab extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
   id: EXTENSION_ID,
