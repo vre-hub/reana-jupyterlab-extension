@@ -8,8 +8,6 @@ node_modules/
 .ipynb_checkpoints
 *.tsbuildinfo
 reana_jupyterlab/labextension
-# Version file is handled by hatchling
-reana_jupyterlab/_version.py
 
 # Integration tests
 ui-tests/test-results/
