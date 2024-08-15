@@ -6,5 +6,6 @@ runs:
       run: |
         set -eux
         jlpm run test
+        pytest reana_jupyterlab/tests/
       shell: bash
     
