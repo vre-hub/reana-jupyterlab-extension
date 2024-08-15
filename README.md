@@ -1,6 +1,8 @@
 # Reana JupyterLab Extension
 [![Install dependencies and build](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/build-and-publish.yml/badge.svg)](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/build-and-publish.yml/badge.svg)
 [![Test](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/test.yml/badge.svg)](https://github.com/vre-hub/reana-jupyterlab-extension/actions/workflows/test.yml/badge.svg)
+[![Python Versions](https://img.shields.io/pypi/pyversions/reana-jupyterlab.svg)](https://pypi.org/project/reana-jupyterlab)
+[![PyPI Version](https://img.shields.io/pypi/v/reana-jupyterlab.svg)](https://pypi.org/project/reana-jupyterlab)
 
 Reana JupyterLab plugin provides a set of tools to interact with the [Reana](https://reanahub.io/) workflow management system from within JupyterLab. 
 
