@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 
-from reana_jupyterlab.tests.conftest import MOCK_SERVER, MOCK_TOKEN
+from conftest import MOCK_SERVER, MOCK_TOKEN
 
 
 @pytest.fixture
