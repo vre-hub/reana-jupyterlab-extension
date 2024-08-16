@@ -1,5 +1,4 @@
 import json
-import os
 import pytest
 
 from conftest import MOCK_SERVER, MOCK_TOKEN
