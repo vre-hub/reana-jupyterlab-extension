@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from conftest import MOCK_SERVER, MOCK_TOKEN
+from reana_jupyterlab.tests.mocks.connection import *
 
 
 @pytest.fixture
