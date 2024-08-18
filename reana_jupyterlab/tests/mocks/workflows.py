@@ -64,3 +64,33 @@ WF1_SPECIFICATION = {
 
 FILE_PATH = 'file1'
 FILE_CONTENT = b'file1 content'
+
+from subprocess import CompletedProcess
+
+MOCK_VALIDATE_SUCCESS = CompletedProcess(
+    args=['reana-client', 'validate', '-f', 'workflow.yaml'],
+    returncode=0,
+    stdout=b'Validation successful',
+    stderr=b'',
+)
+
+MOCK_VALIDATE_ERROR = CompletedProcess(
+    args=['reana-client', 'validate', '-f', 'workflow.yaml'],
+    returncode=1,
+    stdout=b'',
+    stderr=b'Validation failed',
+)
+
+MOCK_RUN_SUCCESS = CompletedProcess(
+    args=['reana-client', 'run', '-w', 'workflow', '-f', 'workflow.yaml'],
+    returncode=0,
+    stdout=b'Workflow created',
+    stderr=b'',
+)
+
+MOCK_RUN_ERROR = CompletedProcess(
+    args=['reana-client', 'run', '-w', 'workflow', '-f', 'workflow.yaml'],
+    returncode=1,
+    stdout=b'',
+    stderr=b'Workflow not created',
+)
