@@ -33,6 +33,7 @@ dynamic = ["version", "description", "authors", "urls", "keywords"]
 dev = [
   "pytest-asyncio",
   "pytest-mock",
+  "pytest-cov",
   "pytest-jupyter[server]"
 ]
 

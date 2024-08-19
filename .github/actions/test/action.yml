@@ -6,6 +6,10 @@ runs:
       run: |
         set -eux
         jlpm run test
-        pytest reana_jupyterlab/tests/
+        pytest reana_jupyterlab/tests/ --cov=reana_jupyterlab
       shell: bash
-    
+
+    - name: Upload results to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
