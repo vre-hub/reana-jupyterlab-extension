@@ -51,7 +51,7 @@ Build the extension
 jlpm run build
 ```
 
-Install the extension
+Install the extension (including the testing dependencies)
 ```bash
 python -m pip install .[dev]
 ```
