@@ -16,7 +16,7 @@ USER root
 RUN jlpm && jlpm run build && \
     python3 -m pip install . && \
     jupyter server extension enable --py reana_jupyterlab && \
-    conda clean --al -y && \
+    conda clean --all -y && \
     jlpm cache clean && \
     rm -rf /home/jovyan/.cache/yarn /root/.npm && \
     rm -rf /opt/conda/pkgs/*
