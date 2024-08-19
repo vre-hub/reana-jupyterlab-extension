@@ -6,5 +6,5 @@ runs:
       run: |
         set -eux
         jlpm run test
-        pytest reana_jupyterlab/tests/ --cov=reana_jupyterlab
+        pytest reana_jupyterlab/tests/ --cov=reana_jupyterlab --cov-report=xml
       shell: bash
