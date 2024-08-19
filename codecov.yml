@@ -1,6 +1,3 @@
 coverage:
-  # Include coverage for specific files or directories
-  include:
-    - reana_jupyterlab
-  exclude:
+  ignore:
     - src
