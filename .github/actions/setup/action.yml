@@ -10,7 +10,7 @@ runs:
       shell: bash
 
     - name: Install Pytest
-      run: python -m pip install pytest-asyncio pytest-mock pytest-jupyter pytest-jupyter[server]
+      run: python -m pip install pytest-asyncio pytest-mock pytest-jupyter[server]
       shell: bash
     
     - name: Install JS dependencies
