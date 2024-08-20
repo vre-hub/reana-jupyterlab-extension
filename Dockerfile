@@ -17,7 +17,7 @@ RUN conda upgrade -c conda-forge nodejs && \
     python3 -m pip install . && \
     jupyter server extension enable --py reana_jupyterlab && \
     conda clean --all -y && \
-    jlpm cache clean && \
+    jlpm cache clean
 USER $NB_UID
 
 WORKDIR /home/jovyan
