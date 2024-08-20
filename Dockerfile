@@ -15,12 +15,10 @@ RUN conda upgrade -c conda-forge nodejs && \
     python3 -m pip install -r requirements.txt && \
     jlpm && jlpm run build && \
     python3 -m pip install . && \
-    jupyter server extension enable --py reana_jupyterlab && \
-    conda clean --all -y && \
-    jlpm cache clean
+    jupyter server extension enable --py reana_jupyterlab
 USER $NB_UID
 
-WORKDIR /home/jovyan
+WORKDIR $HOME
 
 # # Expose the port and run JupyterLab
 # EXPOSE 8888
