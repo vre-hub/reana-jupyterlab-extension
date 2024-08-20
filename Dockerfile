@@ -7,18 +7,18 @@ SHELL ["/bin/bash", "-c"]
 COPY . /reana-jupyterlab-extension
 WORKDIR /reana-jupyterlab-extension
 
-# Install Node
-RUN conda upgrade -c conda-forge nodejs
-
-# Install requirements and build the extension
-RUN python3 -m pip install --upgrade pip
-RUN python3 -m pip install -r requirements.txt
-
+# Setup
 USER root
-RUN jlpm && jlpm run build
-
-RUN python3 -m pip install .
-RUN jupyter server extension enable --py reana_jupyterlab
+RUN conda upgrade -c conda-forge nodejs && \
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install -r requirements.txt && \
+    jlpm && jlpm run build && \
+    python3 -m pip install . && \
+    jupyter server extension enable --py reana_jupyterlab && \
+    conda clean --all -y && \
+    jlpm cache clean && \
+    rm -rf /home/jovyan/.cache/yarn /root/.npm && \
+    rm -rf /opt/conda/pkgs/*
 USER $NB_UID
 
 WORKDIR /home/jovyan

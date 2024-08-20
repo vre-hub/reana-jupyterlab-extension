@@ -26,7 +26,16 @@ dependencies = [
     "notebook<7",
     "jupyterlab>=4.0.0,<5",
 ]
+
 dynamic = ["version", "description", "authors", "urls", "keywords"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest-asyncio",
+  "pytest-mock",
+  "pytest-cov",
+  "pytest-jupyter[server]"
+]
 
 [tool.hatch.version]
 source = "nodejs"
