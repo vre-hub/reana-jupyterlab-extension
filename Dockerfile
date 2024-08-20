@@ -18,8 +18,7 @@ RUN conda upgrade -c conda-forge nodejs && \
     jupyter server extension enable --py reana_jupyterlab && \
     conda clean --all -y && \
     jlpm cache clean && \
-    rm -rf /home/jovyan/.cache/yarn /root/.npm && \
-    # rm -rf /opt/conda/pkgs/*
+    rm -rf /home/jovyan/.cache/yarn /root/.npm
 USER $NB_UID
 
 WORKDIR /home/jovyan
