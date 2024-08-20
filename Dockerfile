@@ -1,4 +1,5 @@
 FROM quay.io/jupyter/scipy-notebook:python-3.11.8
+LABEL author="VRE Team @ CERN 2024"
 LABEL maintainer="rubenperezm"
 
 SHELL ["/bin/bash", "-c"]
@@ -21,8 +22,6 @@ RUN conda upgrade -c conda-forge nodejs && \
     rm -rf /opt/conda/pkgs/*
 USER $NB_UID
 
-WORKDIR /home/jovyan
+WORKDIR $HOME
 
-# Expose the port and run JupyterLab
-EXPOSE 8888
-CMD ["jupyter", "lab", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--no-browser", "--allow-root"]
+CMD ["start-notebook.py"]
