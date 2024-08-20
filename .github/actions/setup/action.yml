@@ -4,6 +4,8 @@ runs:
   steps:
     - name: "Base Setup: Node + Python"
       uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      with:
+        python_version: ${{ inputs.python-version }}
 
     - name: Install Python dependencies
       run: python -m pip install -r requirements.txt
@@ -20,3 +22,9 @@ runs:
     - name: Enable server extension
       run: jupyter server extension enable --py reana_jupyterlab
       shell: bash
+
+inputs:
+  python_version: 
+    description: "Python version to use"
+    required: false
+    default: "3.11"
