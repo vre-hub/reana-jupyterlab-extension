@@ -24,7 +24,4 @@ USER $NB_UID
 
 WORKDIR $HOME
 
-# # Expose the port and run JupyterLab
-# EXPOSE 8888
-# CMD ["jupyter", "lab", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--no-browser", "--allow-root"]
 CMD ["start-notebook.py"]
