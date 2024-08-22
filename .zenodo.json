@@ -1,0 +1,35 @@
+{
+    "title": "REANA JupyterLab extension",
+    "creators": [
+        {
+            "orcid": "0000-0001-6262-647X",
+            "affiliation": "CERN",
+            "name": "Pérez-Mercado, Rubén"
+        },
+        {
+            "orcid":"0000-0003-2224-4594",
+            "affiliation": "CERN",
+            "name": "García-García, Enrique"
+        },
+        {
+            "orcid":"0000-0002-3403-1177",
+            "affiliation": "CERN",
+            "name": "Guerrieri, Giovanni"
+        }
+    ],
+
+    "license": "Apache-2.0",
+    "keywords": [
+        "REANA",
+        "JupyterLab",
+        "VRE",
+        "Analysis facilities",
+        "Re-analysis",
+        "Preservation",
+        "Reproducibility",
+        "Reinterpretation"
+    ],
+    "communities": [
+        {"identifier": "escape2020"}
+    ]
+}
