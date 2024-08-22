@@ -1,8 +1,9 @@
 {
+    "title": "REANA JupyterLab extension",
     "creators": [
         {
             "orcid": "0000-0001-6262-647X",
-            "affiliation": "University of Granada, CERN",
+            "affiliation": "CERN",
             "name": "Pérez-Mercado, Rubén"
         },
         {
@@ -29,6 +30,6 @@
         "Reinterpretation"
     ],
     "communities": [
-        {"identifier": "ESCAPE"}
+        {"identifier": "escape2020"}
     ]
 }
