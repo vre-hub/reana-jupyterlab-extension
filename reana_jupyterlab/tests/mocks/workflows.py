@@ -42,6 +42,10 @@ WF1_FILES = {
     ]
 }
 
+DELETED_WF_FILES = {
+    "message": "Workflow workspace was deleted"
+}
+
 WF1_FILES_RESPONSE = {
     "files": [
         {

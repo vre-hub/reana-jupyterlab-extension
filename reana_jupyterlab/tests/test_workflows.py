@@ -42,6 +42,14 @@ def mock_get_workspace(mocker):
     mocker.patch('requests.get', return_value=response)
 
 @pytest.fixture
+def mock_get_workspace_deleted(mocker):
+    response = mocker.Mock()
+    response.json.return_value = DELETED_WF_FILES.copy()
+    response.status_code = 400
+
+    mocker.patch('requests.get', return_value=response)
+
+@pytest.fixture
 def mock_get_specification(mocker):
     response = mocker.Mock()
     response.json.return_value = WF1_SPECIFICATION.copy()
@@ -144,6 +152,15 @@ async def test_get_workspace(jp_fetch, endpoint, mock_get_workspace):
 
     assert response.code == 200
     assert data == WF1_FILES_RESPONSE
+
+
+@pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/workflows/mock_wf_id_1/workspace'])
+async def test_get_workspace_deleted(jp_fetch, endpoint, mock_get_workspace_deleted):
+    response = await jp_fetch(endpoint)
+    data = json.loads(response.body)
+
+    assert response.code == 200
+    assert data['message'] == DELETED_WF_FILES['message']
 
 @pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/workflows/mock_wf_id_1/specification'])
 async def test_get_specification(jp_fetch, endpoint, mock_get_specification):
