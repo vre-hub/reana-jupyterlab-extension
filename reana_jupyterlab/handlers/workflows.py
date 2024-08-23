@@ -139,12 +139,16 @@ class WorkflowWorkspaceHandler(APIHandler):
         try:
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?{string_params}")
             data = response.json()
+
+            if response.status_code != 200:
+                raise Exception(data.get('message', 'Error getting workspace files'))
+            
             data['files'] = self._parse_files(data.pop('items'))
             self.finish(data)
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',
-                'message': str(e)
+                'message': str(e),
             }))
 
 class WorkflowSpecificationHandler(APIHandler):

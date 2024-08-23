@@ -85,6 +85,10 @@ const useStyles = createUseStyles({
     },
     transparent: {
         opacity: 0.5
+    },
+    message: {
+        padding: '16px',
+        textAlign: 'center'
     }
 });
 
@@ -116,12 +120,14 @@ export const WorkflowWorkspace: React.FC<MyProps> = ({ workflow, setWorkflow, is
         if (loading) {
             const populateWorkflow = async () => {
                 try {
-                    const wfName = workflow.name + '.' + workflow.run;
-                    const dataWorkspace = await requestAPI<any>(`workflows/${wfName}/workspace?page=${page}&search=${query}`, {
-                        method: 'GET',
-                    });
-                    setWorkflow({ ...workflow, ...dataWorkspace });
-                    setNavigation({...navigation, ...dataWorkspace});
+                    if (workflow.status !== 'deleted') {
+                        const wfName = workflow.name + '.' + workflow.run;
+                        const dataWorkspace = await requestAPI<any>(`workflows/${wfName}/workspace?page=${page}&search=${query}`, {
+                            method: 'GET',
+                        });
+                        setWorkflow({ ...workflow, ...dataWorkspace });
+                        setNavigation({...navigation, ...dataWorkspace});
+                    }
                 } catch (e) {
                     console.error(e);
                 } finally {
@@ -193,6 +199,14 @@ export const WorkflowWorkspace: React.FC<MyProps> = ({ workflow, setWorkflow, is
             setSelectedFiles(selectedFiles.filter(f => f !== file))
             :
             setSelectedFiles([...selectedFiles, file]);
+    }
+
+    if (workflow.status === 'deleted') {
+        return (
+            <div className={classes.content}>
+                <p className={classes.message}>The workflow workspace was deleted.</p>
+            </div>
+        );
     }
 
     if (loading) {
