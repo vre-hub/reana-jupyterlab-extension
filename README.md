@@ -52,6 +52,11 @@ Build the extension
 jlpm run build
 ```
 
+Enable watch mode in a separate terminal to automatically rebuild the extension on changes:
+```bash
+jlpm watch
+```
+
 Install the extension in editable mode and include the development dependencies:
 ```bash
 python -m pip install -e .
