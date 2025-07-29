@@ -65,5 +65,5 @@ python -m jupyter server extension enable --py reana_jupyterlab.server
 
 Finally, open a JupyterLab instance. The extension should be available in the JupyterLab sidebar.
 ```bash
-python -m jupyter lab
+python -m jupyter lab --autoreload
 ```
