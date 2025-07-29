@@ -2,11 +2,10 @@ from jupyter_server.base.handlers import APIHandler
 import os
 import json
 import re
-import requests
 import subprocess
 from urllib.parse import quote_plus, urlencode
+from ..client import ReanaAPIClient
 
-# import ../const.py file
 from ..const import (
     WORKFLOWS_PAGE_SIZE,
     WORKFLOWS_TYPE,
@@ -16,6 +15,10 @@ from ..const import (
 endpoint = 'workflows'
 
 class WorkflowsHandler(APIHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
+
     def _parse_workflow(self, workflow):
         parsed_workflow = {}
 
@@ -31,7 +34,7 @@ class WorkflowsHandler(APIHandler):
         parsed_workflow['totalJobs'] = workflow.get('progress').get('total', {}).get('total', 0)
 
         return parsed_workflow
-    
+
     def _parse_workflows(self, workflows):
         parsed_workflows = []
 
@@ -53,7 +56,6 @@ class WorkflowsHandler(APIHandler):
         if 'search' in params:
             params['search'] = json.dumps({'name': [params['search']]})
 
-        params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
         params['type'] = WORKFLOWS_TYPE
         params['size'] = WORKFLOWS_PAGE_SIZE
         params['include_progress'] = True
@@ -65,10 +67,9 @@ class WorkflowsHandler(APIHandler):
     def get(self):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
-        server_url = os.getenv('REANA_SERVER_URL', '')
 
         try:
-            response = requests.get(f"{server_url}/api/{endpoint}?{string_params}")
+            response = self.client.get(endpoint, params=string_params)
             workflows = self._parse_workflows(response)
             self.finish(json.dumps(workflows))
         except Exception as e:
@@ -78,6 +79,10 @@ class WorkflowsHandler(APIHandler):
             }))
 
 class WorkflowLogsHandler(APIHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
+
     def _parse_logs(self, workflow):
         wf = workflow.json()
         logs = json.loads(wf.get('logs', ''))
@@ -87,16 +92,12 @@ class WorkflowLogsHandler(APIHandler):
                 'jobLogs': logs['job_logs']
             }
         )
-    
-    def get(self, workflow_id):
-        server_url = os.getenv('REANA_SERVER_URL', '')
-        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
+    def get(self, workflow_id):
         try:
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/logs?access_token={access_token}")
+            response = self.client.get(f"{endpoint}/{workflow_id}/logs")
             logs = self._parse_logs(response)
             self.finish(logs)
-
         except Exception as e:
             self.finish(json.dumps({
                 'status': 'error',
@@ -104,6 +105,10 @@ class WorkflowLogsHandler(APIHandler):
             }))
 
 class WorkflowWorkspaceHandler(APIHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
+
     def _parse_files(self, files):
         parsed_files = []
 
@@ -117,32 +122,30 @@ class WorkflowWorkspaceHandler(APIHandler):
             )
 
         return parsed_files
-    
+
     def _parse_params(self, params):
         params = {key: params[key][0].decode('utf-8') for key in params if not key.isdigit()}
 
         if 'search' in params:
             params['search'] = json.dumps({'name': [params['search']]})
 
-        params['access_token'] = os.getenv('REANA_ACCESS_TOKEN', '')
         params['size'] = WORKSPACE_PAGE_SIZE
 
         string_params = urlencode(params, quote_via=quote_plus)
 
         return string_params
-    
+
     def get(self, workflow_id):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
-        server_url = os.getenv('REANA_SERVER_URL', '')
 
         try:
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/workspace?{string_params}")
+            response = self.client.get(f"{endpoint}/{workflow_id}/workspace", params=string_params)
             data = response.json()
 
             if response.status_code != 200:
                 raise Exception(data.get('message', 'Error getting workspace files'))
-            
+
             data['files'] = self._parse_files(data.pop('items'))
             self.finish(data)
         except Exception as e:
@@ -152,12 +155,13 @@ class WorkflowWorkspaceHandler(APIHandler):
             }))
 
 class WorkflowSpecificationHandler(APIHandler):
-    def get(self, workflow_id):
-        server_url = os.getenv('REANA_SERVER_URL', '')
-        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
 
+    def get(self, workflow_id):
         try:
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_id}/specification?access_token={access_token}")
+            response = self.client.get(f"{endpoint}/{workflow_id}/specification")
             self.finish(response.json())
         except Exception as e:
             self.finish(json.dumps({
@@ -166,17 +170,18 @@ class WorkflowSpecificationHandler(APIHandler):
             }))
 
 class WorkspaceFilesHandler(APIHandler):
-    def get(self, workflow_name, file_name):
-        server_url = os.getenv('REANA_SERVER_URL', '')
-        access_token = os.getenv('REANA_ACCESS_TOKEN', '')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
 
+    def get(self, workflow_name, file_name):
         try:
             file = quote_plus(file_name)
-            response = requests.get(f"{server_url}/api/{endpoint}/{workflow_name}/workspace/{file}?access_token={access_token}")
+            response = self.client.get(f"{endpoint}/{workflow_name}/workspace/{file}")
 
             path = file_name.rsplit('/', 1)
             path = path[0] if len(path) > 1 else ''
-            
+
             os.makedirs(workflow_name + '/' + path, exist_ok=True)
 
             with open(workflow_name + '/' + file_name, 'wb') as f:
@@ -193,6 +198,10 @@ class WorkspaceFilesHandler(APIHandler):
 
 
 class WorkflowCreateHandler(APIHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
+
     def post(self):
         try:
             body = json.loads(self.request.body)
@@ -205,16 +214,16 @@ class WorkflowCreateHandler(APIHandler):
 
             if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
                 raise Exception('Invalid path')
-            
+
             # Check that the workflow name does not have characters that may cause issues
             if re.fullmatch(r'\w+', wf_name) is None:
                 raise Exception('Invalid workflow name')
-            
+
             result = subprocess.run(['reana-client', 'run', '-w', wf_name, '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:
                 raise Exception(result.stderr.decode('utf-8'))
-            
+
             self.finish(json.dumps({
                 'status': 'success',
                 'message': 'Workflow created'
@@ -227,6 +236,10 @@ class WorkflowCreateHandler(APIHandler):
             }))
 
 class WorkflowValidateHandler(APIHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.client = ReanaAPIClient()
+
     def post(self):
         try:
             body = json.loads(self.request.body)
@@ -237,12 +250,12 @@ class WorkflowValidateHandler(APIHandler):
 
             if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
                 raise Exception('Invalid path')
-            
+
             result = subprocess.run(['reana-client', 'validate', '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:
                 raise Exception(result.stderr.decode('utf-8'))
-            
+
             self.finish(json.dumps({
                 'status': 'success',
                 'message': result.stdout.decode('utf-8')

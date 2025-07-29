@@ -1,8 +1,3 @@
-export interface IReanaAuthCredentials {
-    server: string;
-    accessToken: string;
-};
-
 export interface IReanaWorkflowStatus {
     id: string;
     name: string;
@@ -51,9 +46,9 @@ export interface IReanaWorkflowSpecification {
 };
 
 export interface IReanaWorkflow extends
-    IReanaWorkflowStatus, 
-    Partial<IReanaWorkflowLogs>, 
-    Partial<IReanaWorkflowWorkspace>, 
+    IReanaWorkflowStatus,
+    Partial<IReanaWorkflowLogs>,
+    Partial<IReanaWorkflowWorkspace>,
     Partial<IReanaWorkflowSpecification> {
 };
 
