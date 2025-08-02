@@ -14,7 +14,7 @@ class FileBrowserHandler(APIHandler):
         entries = []
         for entry in os.listdir(path):
             entry_path = os.path.join(path, entry)
-            if not entry.startswith('.') and (os.path.isdir(entry) or entry.endswith('.yaml')):
+            if not entry.startswith('.') and (os.path.isdir(entry_path) or entry.endswith('.yaml')):
                 rel_entry_path = os.path.join(relative_path, entry)
                 entries.append({
                     "name": entry,
