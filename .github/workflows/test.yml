@@ -2,7 +2,7 @@ name: Test
 
 on:
   push:
-    branches: main
+    branches: dev
   pull_request:
     branches: '*'
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -21,7 +21,7 @@ jobs:
       - uses: ./.github/actions/test
       
       - name: Upload results to Codecov
-        if: matrix.python-version == '3.11'
+        if: matrix.python_version == '3.11'
         uses: codecov/codecov-action@v4
         with:
           file: coverage.xml
