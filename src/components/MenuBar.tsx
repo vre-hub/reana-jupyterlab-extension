@@ -62,7 +62,6 @@ export interface IMenu {
   title: any;
   value: any;
   right?: boolean;
-  disabled?: boolean;
 }
 
 export const MenuBar: React.FunctionComponent<IMenuBarProps> = ({
@@ -77,13 +76,12 @@ export const MenuBar: React.FunctionComponent<IMenuBarProps> = ({
       <ul className={classes.tab}>
         {menus.map(menu => {
           const activeClass = menu.value === value ? 'active' : '';
-          const disabledClass = menu.disabled ? 'disabled' : '';
           const tabClass = menu.right ? classes.tabItemRight : classes.tabItem;
           return (
             <li
-              onClick={!menu.disabled ? () => onChange(menu.value) : undefined}
+              onClick={() => onChange(menu.value)}
               key={menu.value}
-              className={`${tabClass} ${activeClass} ${disabledClass}`}
+              className={`${tabClass} ${activeClass}`}
             >
               {menu.title}
             </li>

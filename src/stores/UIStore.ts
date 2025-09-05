@@ -11,29 +11,15 @@
 
 import { Store } from 'pullstate';
 import {
-  IReanaAuthCredentials,
   IReanaWorkflow
 } from '../types';
 
 export interface IUIState {
-  authConfig: IReanaAuthCredentials;
   hasConnection: boolean;
   selectedWorkflow: IReanaWorkflow | null;
 }
 
-// export const initialState: IUIState = {
-//   authConfig: {
-//     server: '',
-//     accessToken: ''
-//   },
-//   hasConnection: false
-// };
-
 export const initialState: IUIState = {
-  authConfig: {
-    server: '',
-    accessToken: ''
-  },
   hasConnection: false,
   selectedWorkflow: null
 };
@@ -42,10 +28,6 @@ export const UIStore = new Store(initialState);
 
 export const resetReanaCaches = (): void => {
   UIStore.update(s => {
-    s.authConfig = {
-      server: '',
-      accessToken: ''
-    };
     s.hasConnection = false;
     s.selectedWorkflow = null;
   });
