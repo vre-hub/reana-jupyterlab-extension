@@ -26,7 +26,7 @@ class EnvVariablesHandler(APIHandler):
             access_token = data.get('accessToken', '')
 
             self._update_env(access_token, server)
-            response = requests.get(f"{server}/api/{endpoint}?access_token={access_token}")
+            response = requests.get(f"{server}/api/{endpoint}?access_token={access_token}", verify=False)
 
             data = response.json()
             if response.status_code != 200 or 'reana_server_version' not in data:
