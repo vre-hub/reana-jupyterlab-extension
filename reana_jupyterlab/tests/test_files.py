@@ -47,7 +47,11 @@ def filespace():
     ('pytest_workspace/folder1/folder2/folder3', set()),
     ('pytest_workspace/folder4', set()),
     ('pytest_workspace/file4.java', set()),
-    ('pytest_workspace/folder1/../file6.yaml', set())
+    ('pytest_workspace/folder1/../file6.yaml', set()),
+    # absolute paths used to slip past the '..' check
+    ('/etc', set()),
+    ('/', set()),
+    ('../../../../etc', set()),
 ])
 async def test_get_files(jp_fetch, path, expected, filespace):
     try:

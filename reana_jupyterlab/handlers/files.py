@@ -1,14 +1,25 @@
 import os
-from jupyter_server.base.handlers import APIHandler
+from pathlib import Path
+
 import tornado.web
+from jupyter_server.base.handlers import APIHandler
+
+from .utils import resolve_within
+
 
 class FileBrowserHandler(APIHandler):
     @tornado.web.authenticated
     async def get(self):
         relative_path = self.get_query_argument('path', '')
-        path = os.path.join(os.getcwd(), relative_path)
 
-        if '..' in path or not os.path.isdir(path):
+        try:
+            path = str(resolve_within(Path.cwd(), relative_path))
+        except ValueError:
+            self.set_status(404)
+            self.finish({"error": "Directory not found"})
+            return
+
+        if not os.path.isdir(path):
             self.set_status(404)
             self.finish({"error": "Directory not found"})
             return
