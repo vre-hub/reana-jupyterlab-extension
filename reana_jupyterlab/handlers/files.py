@@ -1,7 +1,9 @@
 import os
 from jupyter_server.base.handlers import APIHandler
+import tornado.web
 
 class FileBrowserHandler(APIHandler):
+    @tornado.web.authenticated
     async def get(self):
         relative_path = self.get_query_argument('path', '')
         path = os.path.join(os.getcwd(), relative_path)

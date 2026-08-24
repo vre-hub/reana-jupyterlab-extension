@@ -4,6 +4,7 @@ import json
 import re
 import requests
 import subprocess
+import tornado.web
 from urllib.parse import quote_plus, urlencode
 
 # import ../const.py file
@@ -62,6 +63,7 @@ class WorkflowsHandler(APIHandler):
 
         return string_params
 
+    @tornado.web.authenticated
     def get(self):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
@@ -88,6 +90,7 @@ class WorkflowLogsHandler(APIHandler):
             }
         )
     
+    @tornado.web.authenticated
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -131,6 +134,7 @@ class WorkflowWorkspaceHandler(APIHandler):
 
         return string_params
     
+    @tornado.web.authenticated
     def get(self, workflow_id):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
@@ -152,6 +156,7 @@ class WorkflowWorkspaceHandler(APIHandler):
             }))
 
 class WorkflowSpecificationHandler(APIHandler):
+    @tornado.web.authenticated
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -166,6 +171,7 @@ class WorkflowSpecificationHandler(APIHandler):
             }))
 
 class WorkspaceFilesHandler(APIHandler):
+    @tornado.web.authenticated
     def get(self, workflow_name, file_name):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -193,6 +199,7 @@ class WorkspaceFilesHandler(APIHandler):
 
 
 class WorkflowCreateHandler(APIHandler):
+    @tornado.web.authenticated
     def post(self):
         try:
             body = json.loads(self.request.body)
@@ -227,6 +234,7 @@ class WorkflowCreateHandler(APIHandler):
             }))
 
 class WorkflowValidateHandler(APIHandler):
+    @tornado.web.authenticated
     def post(self):
         try:
             body = json.loads(self.request.body)

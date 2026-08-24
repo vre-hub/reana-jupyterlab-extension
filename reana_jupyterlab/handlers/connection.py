@@ -2,6 +2,7 @@ from jupyter_server.base.handlers import APIHandler
 import os
 import json
 import requests
+import tornado.web
 
 endpoint = 'you'
 class EnvVariablesHandler(APIHandler):
@@ -9,6 +10,7 @@ class EnvVariablesHandler(APIHandler):
         os.environ['REANA_SERVER_URL'] = server
         os.environ['REANA_ACCESS_TOKEN'] = access_token  
     
+    @tornado.web.authenticated
     def get(self):
         server = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -18,6 +20,7 @@ class EnvVariablesHandler(APIHandler):
             'accessToken': access_token
         }))
         
+    @tornado.web.authenticated
     def post(self):
         data = self.get_json_body()
 
