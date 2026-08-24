@@ -66,3 +66,14 @@ async def test_post_env_vars_failure(jp_fetch, endpoint, mock_post_env_vars_fail
     data = json.loads(response.body)
     assert data.get('status', '') == 'error'
     assert data.get('message', '').startswith('Could not connect to the REANA server')
+
+@pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/env'])
+async def test_post_env_vars_disallowed_server(jp_fetch, endpoint):
+    data = {'server': 'http://169.254.169.254/', 'accessToken': 'x'}
+
+    response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
+    assert response.code == 200
+
+    data = json.loads(response.body)
+    assert data.get('status', '') == 'error'
+    assert 'not allowed' in data.get('message', '')
