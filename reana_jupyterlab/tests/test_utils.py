@@ -1,6 +1,6 @@
 import pytest
 
-from reana_jupyterlab.handlers.utils import is_allowed_reana_server
+from reana_jupyterlab.handlers.utils import is_allowed_reana_server, resolve_within
 
 
 @pytest.mark.parametrize('url, allowed', [
@@ -31,3 +31,19 @@ def test_allowlist_restricts_to_listed_hosts(monkeypatch):
     assert is_allowed_reana_server('https://evil.example') is False
     # a public host that isn't on the list is still rejected
     assert is_allowed_reana_server('https://example.org') is False
+
+
+@pytest.mark.parametrize('user_path', [
+    '..',
+    '../escaped.txt',
+    'nested/../../escaped.txt',
+    '/etc/passwd',
+])
+def test_resolve_within_rejects_paths_outside_the_base(tmp_path, user_path):
+    with pytest.raises(ValueError):
+        resolve_within(tmp_path, user_path)
+
+
+@pytest.mark.parametrize('user_path', ['file.txt', 'nested/file.txt', './file.txt'])
+def test_resolve_within_allows_paths_inside_the_base(tmp_path, user_path):
+    assert resolve_within(tmp_path, user_path).is_relative_to(tmp_path.resolve())

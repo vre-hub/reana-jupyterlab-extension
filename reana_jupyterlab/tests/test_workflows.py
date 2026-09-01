@@ -1,7 +1,6 @@
 import json
 import pytest
 import os
-import shutil
 from pathlib import Path
 
 from reana_jupyterlab.tests.mocks.workflows import *
@@ -325,16 +324,12 @@ def mock_download(mocker):
 
 
 @pytest.fixture
-def workflow_dir():
-    base = Path('pytest_wf_download').resolve()
-    if base.exists():
-        shutil.rmtree(base)
-    base.mkdir(parents=True)
-    yield base
-    shutil.rmtree(base)
-    escaped = Path.cwd() / 'escaped_by_test.txt'
-    if escaped.exists():
-        escaped.unlink()
+def workflow_dir(tmp_path, monkeypatch):
+    # the handler resolves the workspace against the process cwd
+    monkeypatch.chdir(tmp_path)
+    base = tmp_path / 'pytest_wf_download'
+    base.mkdir()
+    return base
 
 
 async def test_workspace_file_writes_inside(jp_fetch, workflow_dir, mock_download):
@@ -351,14 +346,11 @@ async def test_workspace_file_traversal_is_contained(jp_fetch, workflow_dir, moc
     escaped = Path.cwd() / 'escaped_by_test.txt'
     assert not escaped.exists()
 
-    try:
-        await jp_fetch(
-            'reana_jupyterlab', 'workflows', workflow_dir.name, 'workspace',
-            '..%2Fescaped_by_test.txt',
-            method='GET',
-        )
-    except Exception:
-        pass
+    # the route is workspace/([^/]+), so a slash can't get through -- '..' can
+    response = await jp_fetch(
+        'reana_jupyterlab', 'workflows', workflow_dir.name, 'workspace', '..',
+        method='GET',
+    )
 
-    # nothing escaped the workflow dir, however the request was rejected
+    assert json.loads(response.body)['status'] == 'error'
     assert not escaped.exists()
