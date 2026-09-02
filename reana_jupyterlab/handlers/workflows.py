@@ -4,7 +4,11 @@ import json
 import re
 import requests
 import subprocess
+import tornado.web
+from pathlib import Path
 from urllib.parse import quote_plus, urlencode
+
+from .utils import resolve_within
 
 # import ../const.py file
 from ..const import (
@@ -62,6 +66,7 @@ class WorkflowsHandler(APIHandler):
 
         return string_params
 
+    @tornado.web.authenticated
     def get(self):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
@@ -88,6 +93,7 @@ class WorkflowLogsHandler(APIHandler):
             }
         )
     
+    @tornado.web.authenticated
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -131,6 +137,7 @@ class WorkflowWorkspaceHandler(APIHandler):
 
         return string_params
     
+    @tornado.web.authenticated
     def get(self, workflow_id):
         params = self.request.query_arguments
         string_params = self._parse_params(params)
@@ -152,6 +159,7 @@ class WorkflowWorkspaceHandler(APIHandler):
             }))
 
 class WorkflowSpecificationHandler(APIHandler):
+    @tornado.web.authenticated
     def get(self, workflow_id):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
@@ -166,20 +174,22 @@ class WorkflowSpecificationHandler(APIHandler):
             }))
 
 class WorkspaceFilesHandler(APIHandler):
+    @tornado.web.authenticated
     def get(self, workflow_name, file_name):
         server_url = os.getenv('REANA_SERVER_URL', '')
         access_token = os.getenv('REANA_ACCESS_TOKEN', '')
 
         try:
+            # keep the write inside the workflow dir (workflow_name/file_name
+            # can both contain .. or be absolute)
+            workflow_dir = resolve_within(Path.cwd(), workflow_name)
+            destination = resolve_within(workflow_dir, file_name)
+
             file = quote_plus(file_name)
             response = requests.get(f"{server_url}/api/{endpoint}/{workflow_name}/workspace/{file}?access_token={access_token}")
 
-            path = file_name.rsplit('/', 1)
-            path = path[0] if len(path) > 1 else ''
-            
-            os.makedirs(workflow_name + '/' + path, exist_ok=True)
-
-            with open(workflow_name + '/' + file_name, 'wb') as f:
+            os.makedirs(str(destination.parent), exist_ok=True)
+            with open(str(destination), 'wb') as f:
                 f.write(response.content)
             self.finish(json.dumps({
                 'status': 'success',
@@ -193,23 +203,23 @@ class WorkspaceFilesHandler(APIHandler):
 
 
 class WorkflowCreateHandler(APIHandler):
+    @tornado.web.authenticated
     def post(self):
         try:
             body = json.loads(self.request.body)
 
             wf_name = body.get('name')
 
-            path = os.path.join(os.getcwd(), body.get('path'))
-            path_split = path.rsplit('/', 1)
-            workspace, yaml_file = path_split
+            target = resolve_within(Path.cwd(), body.get('path') or '')
+            workspace, yaml_file = str(target.parent), target.name
 
-            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
+            if target.suffix != '.yaml' or not os.path.isdir(workspace):
                 raise Exception('Invalid path')
-            
+
             # Check that the workflow name does not have characters that may cause issues
             if re.fullmatch(r'\w+', wf_name) is None:
                 raise Exception('Invalid workflow name')
-            
+
             result = subprocess.run(['reana-client', 'run', '-w', wf_name, '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:
@@ -227,17 +237,17 @@ class WorkflowCreateHandler(APIHandler):
             }))
 
 class WorkflowValidateHandler(APIHandler):
+    @tornado.web.authenticated
     def post(self):
         try:
             body = json.loads(self.request.body)
-            path = os.path.join(os.getcwd(), body.get('path'))
 
-            path_split = path.rsplit('/', 1)
-            workspace, yaml_file = path_split
+            target = resolve_within(Path.cwd(), body.get('path') or '')
+            workspace, yaml_file = str(target.parent), target.name
 
-            if '..' in path or not os.path.isdir(workspace) or not yaml_file.endswith('.yaml'):
+            if target.suffix != '.yaml' or not os.path.isdir(workspace):
                 raise Exception('Invalid path')
-            
+
             result = subprocess.run(['reana-client', 'validate', '-f', yaml_file], cwd=workspace, capture_output=True)
 
             if result.returncode != 0:

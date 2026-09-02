@@ -1,6 +1,7 @@
 import json
 import pytest
 import os
+from pathlib import Path
 
 from reana_jupyterlab.tests.mocks.workflows import *
 
@@ -185,7 +186,7 @@ async def test_download_files(jp_fetch, endpoint, mock_download_files):
 @pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/validate'])
 async def test_post_validate_success(jp_fetch, endpoint, mock_post_validate_success):
     data = {
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -198,7 +199,7 @@ async def test_post_validate_success(jp_fetch, endpoint, mock_post_validate_succ
 @pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/validate'])
 async def test_post_validate_error(jp_fetch, endpoint, mock_post_validate_error):
     data = {
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -211,7 +212,7 @@ async def test_post_validate_error(jp_fetch, endpoint, mock_post_validate_error)
 @pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/validate'])
 async def test_post_validate_invalid_path(jp_fetch, endpoint, mock_post_validate_invalid_path):
     data = {
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -224,7 +225,7 @@ async def test_post_validate_invalid_path(jp_fetch, endpoint, mock_post_validate
 @pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/validate'])
 async def test_post_validate_not_yaml_file(jp_fetch, endpoint, mock_post_validate_not_yaml_file):
     data = {
-        'path': '/path/to/workflow.txt'
+        'path': 'workflow.txt'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -238,7 +239,7 @@ async def test_post_validate_not_yaml_file(jp_fetch, endpoint, mock_post_validat
 async def test_post_create_success(jp_fetch, endpoint, mock_post_create_success):
     data = {
         'name': 'workflow',
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -252,7 +253,7 @@ async def test_post_create_success(jp_fetch, endpoint, mock_post_create_success)
 async def test_post_create_error(jp_fetch, endpoint, mock_post_create_error):
     data = {
         'name': 'workflow',
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -266,7 +267,7 @@ async def test_post_create_error(jp_fetch, endpoint, mock_post_create_error):
 async def test_post_create_invalid_path(jp_fetch, endpoint, mock_post_create_invalid_path):
     data = {
         'name': 'workflow',
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -280,7 +281,7 @@ async def test_post_create_invalid_path(jp_fetch, endpoint, mock_post_create_inv
 async def test_post_create_invalid_name(jp_fetch, endpoint, mock_post_create_success):
     data = {
         'name': 'workflow!?@',
-        'path': '/path/to/workflow.yaml'
+        'path': 'workflow.yaml'
     }
 
     response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
@@ -289,3 +290,67 @@ async def test_post_create_invalid_name(jp_fetch, endpoint, mock_post_create_suc
     data = json.loads(response.body)
     assert data.get('status', '') == 'error'
     assert data.get('message', '') == 'Invalid workflow name'
+
+@pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/run'])
+async def test_post_create_absolute_path_rejected(jp_fetch, endpoint, mock_post_create_success):
+    data = {'name': 'workflow', 'path': '/etc/evil.yaml'}
+
+    response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
+    assert response.code == 200
+
+    data = json.loads(response.body)
+    assert data.get('status', '') == 'error'
+    assert data.get('message', '') != 'Workflow created'
+
+
+@pytest.mark.parametrize('endpoint', ['/reana_jupyterlab/validate'])
+async def test_post_validate_absolute_path_rejected(jp_fetch, endpoint, mock_post_validate_success):
+    data = {'path': '/etc/evil.yaml'}
+
+    response = await jp_fetch(endpoint, method='POST', body=json.dumps(data))
+    assert response.code == 200
+
+    data = json.loads(response.body)
+    assert data.get('status', '') == 'error'
+    assert data.get('message', '') != 'Validation successful'
+
+
+@pytest.fixture
+def mock_download(mocker):
+    response = mocker.Mock()
+    response.content = b'PWNED'
+    response.status_code = 200
+    mocker.patch('requests.get', return_value=response)
+
+
+@pytest.fixture
+def workflow_dir(tmp_path, monkeypatch):
+    # the handler resolves the workspace against the process cwd
+    monkeypatch.chdir(tmp_path)
+    base = tmp_path / 'pytest_wf_download'
+    base.mkdir()
+    return base
+
+
+async def test_workspace_file_writes_inside(jp_fetch, workflow_dir, mock_download):
+    response = await jp_fetch(
+        'reana_jupyterlab', 'workflows', workflow_dir.name, 'workspace', 'ok.txt',
+        method='GET',
+    )
+    data = json.loads(response.body)
+    assert data['status'] == 'success'
+    assert (workflow_dir / 'ok.txt').read_bytes() == b'PWNED'
+
+
+async def test_workspace_file_traversal_is_contained(jp_fetch, workflow_dir, mock_download):
+    escaped = Path.cwd() / 'escaped_by_test.txt'
+    assert not escaped.exists()
+
+    # the route is workspace/([^/]+), so a slash can't get through -- '..' can
+    response = await jp_fetch(
+        'reana_jupyterlab', 'workflows', workflow_dir.name, 'workspace', '..',
+        method='GET',
+    )
+
+    assert json.loads(response.body)['status'] == 'error'
+    assert not escaped.exists()
