@@ -19,3 +19,10 @@ def _jupyter_server_extension_points():  # pragma: no cover
     return [{
         "module": "reana_jupyterlab.server"
     }]
+
+# Import and expose the server extension loading function for backward compatibility
+# Fixes `X Validation failed: validation failed` error
+
+from .server import _load_jupyter_server_extension
+
+load_jupyter_server_extension = _load_jupyter_server_extension

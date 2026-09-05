@@ -20,12 +20,12 @@ Reana JupyterLab plugin provides a set of tools to interact with the [Reana](htt
 ## Installation guide for users
 To install the extension, run the following command:
 ```bash
-pip install reana-jupyterlab
+python -m pip install reana-jupyterlab
 ```
 
 In case you want to run the tests, install the extension with the following command:
 ```bash
-pip install reana-jupyterlab[dev]
+python -m pip install reana-jupyterlab[dev]
 ```
 
 ### Docker image
@@ -52,17 +52,23 @@ Build the extension
 jlpm run build
 ```
 
-Install the extension (including the testing dependencies)
+Enable watch mode in a separate terminal to automatically rebuild the extension on changes:
 ```bash
-python -m pip install .[dev]
+jlpm watch
+```
+
+Install the extension in editable mode and include the development dependencies:
+```bash
+python -m pip install -e .
+python -m pip install ".[dev]"
 ```
 
 Enable the server extension
 ```bash
-jupyter server extension enable --py reana_jupyterlab
+python -m jupyter server extension enable --py reana_jupyterlab.server
 ```
 
 Finally, open a JupyterLab instance. The extension should be available in the JupyterLab sidebar.
 ```bash
-jupyter lab
+python -m jupyter lab --autoreload
 ```
